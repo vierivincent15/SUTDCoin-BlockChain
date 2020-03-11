@@ -1,5 +1,5 @@
 from transaction import Transaction
-from blockchain import Blockchain, validate
+from blockchain import Blockchain
 from block import Block
 from ecdsa import SigningKey
 import hashlib
@@ -47,29 +47,33 @@ if __name__ == "__main__":
     client2 = SPVClient.new('b')
 
     # build a test blockchain
-    tx1 = Transaction('Alice', 'Bob', 10, "comment")
-    tx2 = Transaction('Bob', 'Alice', 20, "comment")
-    tx3 = Transaction('Alice', 'Bob', 30, "comment")
+    alice_priv = SigningKey.generate()
+    alice_pub = alice_priv.get_verifying_key()
+    bob_priv = SigningKey.generate()
+    bob_pub = alice_priv.get_verifying_key()
+    tx1 = Transaction(alice_pub, bob_pub, 10, "comment")
+    tx2 = Transaction(bob_pub, alice_pub, 20, "comment")
+    tx3 = Transaction(alice_pub, bob_pub, 30, "comment")
     transactions1 = [tx1, tx2, tx3]
     transactions2 = [tx2, tx1, tx3]
     transactions3 = [tx3, tx2, tx1]
     transactions4 = [tx1, tx2, tx3, tx1]
     block1 = Block(transactions1)
-    block2 = Block(transactions2)
-    block3 = Block(transactions3)
-    block4 = Block(transactions4)
-    blocks = [block1, block2, block3]
-    blockchain = Blockchain()
-    for b in blocks:
-        blockchain.add(b)
+    # block2 = Block(transactions2)
+    # block3 = Block(transactions3)
+    # block4 = Block(transactions4)
+    # blocks = [block1, block2, block3]
+    # blockchain = Blockchain()
+    # for b in blocks:
+    #     blockchain.add(b)
 
-    # Able to receive block headers (not full blocks)
-    # client1.receive_block_header(blockchain)
-    # print(client1.block_headers)
+    # # Able to receive block headers (not full blocks)
+    # # client1.receive_block_header(blockchain)
+    # # print(client1.block_headers)
 
-    # Able to receive transactions (with their presence proofs) and verify them
-    # Able to send transactions
-    UTXO = client1.send_transaction(client2.public_key, 100, 'comment')
-    print("\nVerifiying Transaction")
-    print("-" * 100)
-    print(f"Result: {client1.verify_transaction(UTXO)}")
+    # # Able to receive transactions (with their presence proofs) and verify them
+    # # Able to send transactions
+    # UTXO = client1.send_transaction(client2.public_key, 100, 'comment')
+    # print("\nVerifiying Transaction")
+    # print("-" * 100)
+    # print(f"Result: {client1.verify_transaction(UTXO)}")
