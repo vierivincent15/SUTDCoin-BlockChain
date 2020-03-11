@@ -58,9 +58,7 @@ class Block:
             boolean = transaction.validate()
             if not boolean:
                 return boolean
-        header_hash = hashlib.sha256(self.serialize(True).encode()).digest()
-        return self.header['tree_root'] == MerkleTree(transactions).get_root() and header_hash < TARGET
-
+        return self.header['tree_root'] == MerkleTree(transactions).get_root()
 
 # to test implementation
 if __name__ == "__main__":
