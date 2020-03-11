@@ -43,29 +43,29 @@ class SPVClient(object):
 if __name__ == "__main__":
     print("Testing SPVClient")
     print("-" * 100)
-    client1 = SPVClient.new('a')
-    client2 = SPVClient.new('b')
+    client1 = SPVClient.new('1')
+    client2 = SPVClient.new('2')
 
     # build a test blockchain
     alice_priv = SigningKey.generate()
     alice_pub = alice_priv.get_verifying_key()
     bob_priv = SigningKey.generate()
     bob_pub = alice_priv.get_verifying_key()
-    tx1 = Transaction(alice_pub, bob_pub, 10, "comment")
-    tx2 = Transaction(bob_pub, alice_pub, 20, "comment")
-    tx3 = Transaction(alice_pub, bob_pub, 30, "comment")
+    tx1 = Transaction.new(alice_pub, bob_pub, 10, "comment", alice_priv)
+    tx2 = Transaction.new(bob_pub, alice_pub, 20, "comment", bob_priv)
+    tx3 = Transaction.new(alice_pub, bob_pub, 30, "comment", alice_priv)
     transactions1 = [tx1, tx2, tx3]
     transactions2 = [tx2, tx1, tx3]
     transactions3 = [tx3, tx2, tx1]
     transactions4 = [tx1, tx2, tx3, tx1]
-    block1 = Block(transactions1)
-    # block2 = Block(transactions2)
-    # block3 = Block(transactions3)
-    # block4 = Block(transactions4)
-    # blocks = [block1, block2, block3]
-    # blockchain = Blockchain()
+    block1 = Block.new(transactions1, None)
+    block2 = Block(transactions2, block1.header)
+    block3 = Block(transactions3, block2.header)
+    block4 = Block(transactions4, block3.header)
+    blocks = [block1]
+    blockchain = Blockchain()
     # for b in blocks:
-    #     blockchain.add(b)
+    #     blockchain.add_block(b)
 
     # # Able to receive block headers (not full blocks)
     # # client1.receive_block_header(blockchain)
