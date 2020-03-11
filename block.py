@@ -6,7 +6,7 @@ import time
 import uuid
 
 class Block:
-    def __init__(self,transactions=None, prev_header=None, header=None):
+    def __init__(self, transactions=None, prev_header=None, header=None):
         self.transactions = transactions
         if header is None:
             self.header = {
@@ -80,6 +80,6 @@ if __name__ == "__main__":
 
     TARGET = b'\x00\x00\xff\xff' + b'\xff'*28
 
-    block1 = Block.new(transactions,b'genesis block')
+    block1 = Block.new(transactions, b'genesis block')
     print(block1.header)
     pass
