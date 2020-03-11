@@ -1,0 +1,11 @@
+{% extends 'base.html' %} {% block head %}
+<title>SPVClient</title>
+{% endblock %} {% block body %} {% if client %}
+<div>
+  SPVClient ID: {{ client.id }}
+</div>
+{% else %}
+<div class="index">
+  Client not created
+</div>
+{% endif %} {% endblock %}

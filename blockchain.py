@@ -34,7 +34,7 @@ class Blockchain():
         # check if previous header
         prev_hash = self.blockchain[-1]
         if prev_hash != block.hash_header():
-            return False 
+            return False
 
         # blockchain is not valid
         if not block.validate():
