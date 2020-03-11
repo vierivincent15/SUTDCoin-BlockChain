@@ -56,6 +56,41 @@ class Blockchain():
             if not block.validate():
                 return False
         return True
+    
+    def add_transaction(transaction):
+        if transaction.validate() and (transaction.tid not in self.tids):
+            self.tx_pool.append(transaction)
+
+    # to add in to add block later
+    def remove_transaction(block):
+        for transaction in block.transactions:
+            try:
+                self.tx_pool.remove(transaction)
+            except ValueError:
+                continue
+
+    # to add in to add block later
+    def add_tids(block):
+        for transaction in block.transactions:
+            self.tids.add(transaction.tid)
+
+    # to add in to add block later
+    def update_balance(block):
+        for transaction in block.transactions:
+            self.balance[transaction.sender] -= transaction.amount
+            if transaction.receiver not in self.balance:
+                self.balance[transaction.receiver] = transaction.amount
+            self.balance[transaction.receiver] += transaction.amount
+
+    def resolve_fork():
+        if len(self.blockchains) > 1:
+            max_length = max([len(blockchain) for blockchain in self.blockchains])
+            new = []
+            for blockchain in self.blockchains:
+                if len(blockchain) == max_length:
+                    new.append(blockchain)
+
+            self.blockchains = new
 
 
 
