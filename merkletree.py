@@ -85,34 +85,48 @@ class MerkleTree():
         # Return the current root
         return self.nonleaf_nodes[0]
 
-    def verify_proof(entry, proof, root):
-        # Verify the proof for the entry and given root. Returns boolean.
-        if proof is None:
-            print("Transaction not in MerkleTree")
-            return False
+def verify_proof(entry, proof, root):
+    # Verify the proof for the entry and given root. Returns boolean.
+    if proof is None:
+        print("Transaction not in MerkleTree")
+        return False
 
-        proof_idx, proof_ls = proof
-        to_hash = str.encode(entry + "leaf")
+    proof_idx, proof_ls = proof
+    to_hash = str.encode(entry + "leaf")
+    m = hashlib.sha256()
+    m.update(to_hash)
+    hash_entry = m.digest()
+
+    hash_value = hash_entry
+    for i in range(len(proof_ls)):
+        if proof_idx[i]%2 == 0:
+            to_hash = hash_value + proof_ls[i] + str.encode("nonleaf")
+        else:
+            to_hash = proof_ls[i] + hash_value + str.encode("nonleaf")
         m = hashlib.sha256()
         m.update(to_hash)
-        hash_entry = m.digest()
+        hash_value = m.digest()
 
-        hash_value = hash_entry
-        for i in range(len(proof_ls)):
-            if proof_idx[i]%2 == 0:
-                to_hash = hash_value + proof_ls[i] + str.encode("nonleaf")
-            else:
-                to_hash = proof_ls[i] + hash_value + str.encode("nonleaf")
-            m = hashlib.sha256()
-            m.update(to_hash)
-            hash_value = m.digest()
-
-        if(hash_value == root):
-            return True
-        else:
-            return False
+    if(hash_value == root):
+        return True
+    else:
+        return False
 
 
 # to test implementation
 if __name__ == "__main__":
-    pass
+    transactions = []
+    amount = 1000
+    comment = "COOL!"
+    for i in range(4):
+        sign_key_1 = SigningKey.generate()
+        sender = sign_key_1.get_verifying_key()
+        
+        sign_key_2 = SigningKey.generate()
+        receiver = sign_key_2.get_verifying_key()
+        
+        Tx = Transaction.new(sender, receiver, amount, comment)
+        Tx.sign(sign_key_1)
+        transactions.append(Tx)
+
+    tree = MerkleTree(transactions)
