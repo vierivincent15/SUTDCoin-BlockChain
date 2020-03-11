@@ -125,8 +125,22 @@ if __name__ == "__main__":
         sign_key_2 = SigningKey.generate()
         receiver = sign_key_2.get_verifying_key()
         
-        Tx = Transaction.new(sender, receiver, amount, comment)
-        Tx.sign(sign_key_1)
+        Tx = Transaction.new(sender, receiver, amount, comment, sign_key_1)
         transactions.append(Tx)
+    
 
-    tree = MerkleTree(transactions)
+    sign_key_1 = SigningKey.generate()
+    sender = sign_key_1.get_verifying_key()
+    
+    sign_key_2 = SigningKey.generate()
+    receiver = sign_key_2.get_verifying_key()
+    
+    Tx = Transaction.new(sender, receiver, amount, comment, sign_key_1)
+
+    print(transactions)
+    print(transactions[2])
+    transactions.remove(Tx)
+    print(transactions)
+    # tree = MerkleTree(transactions)
+    # print(tree)
+    # print(transactions[0].validate())
