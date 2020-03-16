@@ -1,5 +1,8 @@
 # implement block class here
+import hashlib
+import json
 
+from ecdsa import SigningKey
 from merkletree import *
 from transaction import *
 import time
