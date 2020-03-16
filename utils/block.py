@@ -80,6 +80,6 @@ if __name__ == "__main__":
         transactions.append(Tx)
 
     TARGET = b'\x00\x00\xff\xff' + b'\xff'*28
-
+    
     block1 = Block.new(transactions, b'genesis block')
     print(block1.header)
