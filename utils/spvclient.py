@@ -28,11 +28,9 @@ class SPVClient(object):
         for key, value in blockchain.blockchains.items():
             self.block_headers.append(value.to_json())
 
-    def send_transaction(self, receiver, amount, comment):
+    def send_transaction(self, receiver, amount, comment="COOL!"):
         # TODO: check balance
-        UTXO = Transaction(self.public_key, receiver, amount, comment)
-        signature = UTXO.sign(self.private_key)
-        UTXO.signature = signature
+        UTXO = Transaction.new(self.public_key, receiver, amount, comment, self.private_key)
         self.balance -= amount
         return UTXO
 
