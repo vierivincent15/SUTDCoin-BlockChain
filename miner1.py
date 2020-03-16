@@ -1,4 +1,4 @@
-from flask import Flask, Response, render_template, request, redirect
+from flask import Flask, Response, make_response, render_template, request, redirect
 from utils.miner import Miner
 from utils.block import Block
 from utils.blockchain import Blockchain
@@ -27,31 +27,23 @@ def index():
 def mine_genesis():
     global miner
     global TARGET
-    transactions = []
-    amount = 1000
-    comment = "comment"
-    for i in range(4):
-        sign_key_1 = SigningKey.generate()
-        sender = sign_key_1.get_verifying_key()
-        sign_key_2 = SigningKey.generate()
-        receiver = sign_key_2.get_verifying_key()
 
-        Tx = Transaction.new(sender, receiver, amount, comment, sign_key_1)
-        transactions.append(Tx)
+    #block = miner.mine(b'genesis block')
+    # print(block)
+    data = {
+        "block": "test"
+    }
+    #response = Response(response=data, status=201)
+    #response._content = data
+    response = make_response(data, 201)
 
-    block = miner.mine(transactions, b'genesis block')
-    print(block)
-
-    if (miner):
-        return Response(status=202)  # already created
-    else:
-        return Response(status=201)
+    return response
 
 
 @app.route('/test')
 def test():
     response = requests.post(
-        miner_server+'/add',
+        miner1+'/add',
         data={'miner': 'miner1'}
     )
     print(response)

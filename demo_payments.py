@@ -25,8 +25,9 @@ response = requests.post(
     data={}
 )
 if(response.status_code == 201):
-    print("Client 1 created")
+    block = response.content
+    print(block)
 else:
-    print("Client 1 already created")
+    print("Error")
 
 print(blockchain.blockchains)
