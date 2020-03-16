@@ -125,11 +125,16 @@ class Blockchain():
         if len(self.blockchains) > 1:
             max_length = max([len(blockchain) for blockchain in self.blockchains])
             new = []
-            for blockchain in self.blockchains:
-                if len(blockchain) == max_length:
-                    new.append(blockchain)
+            new_balance = {}
+            counter = 0
+            for i in range(len(self.blockchains)):
+                if len(self.blockchains[i]) == max_length:
+                    new.append(self.blockchains[i])
+                    new_balance[counter] = self.balance[i]
+                    counter += 1
 
             self.blockchains = new
+            self.balance = new_balance
 
     def trace_prev_header(self,prev_header):
         for i in range (len(self.blockchains)):
