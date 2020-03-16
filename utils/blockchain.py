@@ -69,7 +69,6 @@ class Blockchain:
 
         return True
 
-
     def validate(self):
         for blockchain in self.blockchains:
             for block in blockchain:
@@ -78,7 +77,7 @@ class Blockchain:
         return True
 
     def add_transaction(self, transaction):
-        if transaction.validate() and (transaction.tid not in self.tids) and (transaction.tid not in self.tx_pool):
+        if transaction.validate() and (transaction.tid not in self.tids) and (transaction not in self.tx_pool):
             self.tx_pool.append(transaction)
 
     # to add in to add block later
@@ -109,21 +108,21 @@ class Blockchain:
         
         return temp_dict
         
-
     def aggregate_balance(self, blockchain_idx, block_idx):
         # I need the blockchain index as well as the block index for this function
         # If block header is given, the index will be recomputed twice
 
         temp_dict = {}
-        for transaction in self.blockchains[blockchain_idx][:block_idx+1]:
-            if transaction.sender is not None:
-                sender = transaction.sender.to_string().hex()
-                temp_dict[sender] -= transaction.amount
-            receiver = transaction.receiver.to_string().hex()
-            if receiver not in temp_dict:
-                temp_dict[receiver] = transaction.amount
-            else:
-                temp_dict[receiver] += transaction.amount
+        for block in self.blockchains[blockchain_idx][:block_idx+1]:
+            for transaction in block.transactions:
+                if transaction.sender is not None:
+                    sender = transaction.sender.to_string().hex()
+                    temp_dict[sender] -= transaction.amount
+                receiver = transaction.receiver.to_string().hex()
+                if receiver not in temp_dict:
+                    temp_dict[receiver] = transaction.amount
+                else:
+                    temp_dict[receiver] += transaction.amount
         
         return temp_dict
 
@@ -150,6 +149,9 @@ class Blockchain:
                     
         # meaning prev_header not found in chain
         return -1
+
+    def get_prev_header(self, bc_idx, b_idx):
+        return self.blockchains[bc_idx][b_idx].hash_header()
 
 # to test implementation
 if __name__ == "__main__":
