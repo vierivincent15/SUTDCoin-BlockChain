@@ -112,6 +112,14 @@ class Blockchain():
 
             self.blockchains = new
 
+    def trace_prev_header(self,prev_header):
+        for i in range (len(self.blockchains)):
+            for j in range (len(self.blockchains[i])):
+                if self.blockchains[i][j].hash_header() == prev_header:
+                    return (i,j)
+                    
+        #meaning prev_header not found in chain
+        return -1
 
 
 # to test implementation
