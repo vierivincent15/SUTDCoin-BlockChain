@@ -5,7 +5,7 @@ import requests
 app = Flask(__name__)
 miners = []
 miner_server = 'http://127.0.0.1:5000'
-client = None
+client = SPVClient.new('1')
 
 
 @app.route('/')
@@ -15,13 +15,12 @@ def index():
     return render_template('client_index.html', client=client)
 
 
-@app.route('/create', methods=['POST'])
+@app.route('/send', methods=['POST'])
 def create_client():
     global client
     if (client):
         return Response(status=202)  # already created
     else:
-        client = SPVClient.new('1')
         return Response(status=201)
 
 

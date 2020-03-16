@@ -27,6 +27,7 @@ def receive_genesis():
     global miner
     json_block = request.form['block']
     block = Block.deserialize(json_block)
+    print(block.header)
 
     miner.blockchain.add_block(block)
     print(miner.blockchain.blockchains)

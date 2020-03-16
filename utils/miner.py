@@ -30,26 +30,10 @@ class Miner:
         self.blockchain.add_transaction(Tx)
         return Tx
 
-<<<<<<< HEAD
-    #should check if prev_header in chain
-    def mine(self, prev_header=None, bc_idx=0, b_idx=-1):
-        global TARGET
-        pow_val = TARGET
-        
-        if prev_header is None:
-            if bc_idx < len(self.blockchain.blockchains):
-                if b_idx < len(self.blockchain.blockchains[bc_idx]):
-                    prev_header = self.blockchain.get_prev_header(bc_idx, b_idx)
-                else:
-                    raise IndexError
-            else:
-                raise IndexError
-=======
     # should check if prev_header in chain
     def mine(self, prev_header):
         global TARGET
         pow_val = TARGET
->>>>>>> 30671e298a90d4b055afee658cb718d7616432f5
 
         transactions = self.blockchain.tx_pool.copy()
 #         for transaction in transactions:

@@ -29,3 +29,8 @@ if(response.status_code == 201):
     print(block.header)
 else:
     print("Error")
+
+response = requests.post(
+    miner1+'/send',
+    data={}
+)

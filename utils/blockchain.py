@@ -113,11 +113,7 @@ class Blockchain:
                 temp_dict[receiver] += transaction.amount
 
         return temp_dict
-<<<<<<< HEAD
-        
-=======
 
->>>>>>> 30671e298a90d4b055afee658cb718d7616432f5
     def aggregate_balance(self, blockchain_idx, block_idx):
         # I need the blockchain index as well as the block index for this function
         # If block header is given, the index will be recomputed twice
@@ -133,7 +129,7 @@ class Blockchain:
                     temp_dict[receiver] = transaction.amount
                 else:
                     temp_dict[receiver] += transaction.amount
-        
+
         return temp_dict
 
     def resolve_fork(self):
@@ -161,11 +157,6 @@ class Blockchain:
         # meaning prev_header not found in chain
         return -1
 
-<<<<<<< HEAD
-    def get_prev_header(self, bc_idx, b_idx):
-        return self.blockchains[bc_idx][b_idx].hash_header()
-=======
->>>>>>> 30671e298a90d4b055afee658cb718d7616432f5
 
 # to test implementation
 if __name__ == "__main__":

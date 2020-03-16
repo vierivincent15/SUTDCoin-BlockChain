@@ -30,6 +30,7 @@ def mine_genesis():
 
     block, status = miner.mine(b'genesis block')
     json_data = block.serialize()
+    print(block.header)
     print(miner.blockchain.blockchains)
 
     response = Response(response=json_data, status=201)
@@ -38,8 +39,8 @@ def mine_genesis():
     return response
 
 
-@app.route('/test')
-def test():
+@app.route('/send', methods=['POST'])
+def send_transaction():
     response = requests.post(
         miner1+'/add',
         data={'miner': 'miner1'}
