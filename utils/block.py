@@ -58,7 +58,6 @@ class Block:
         return cls(transactions, None, header)
 
     def validate(self):
-        global TARGET
         boolean = True
         for i in range(1,len(self.transactions)):
             transaction = self.transactions[i]
