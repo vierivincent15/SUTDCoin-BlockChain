@@ -1,6 +1,6 @@
-from transaction import Transaction
-from blockchain import Blockchain
-from block import Block
+from utils.transaction import Transaction
+from utils.blockchain import Blockchain
+from utils.block import Block
 from ecdsa import SigningKey
 import hashlib
 import time
@@ -20,7 +20,7 @@ class SPVClient(object):
         return newClient
 
     def receive_block_header(self, blockchain):
-        for key, value in blockchain.chain.items():
+        for key, value in blockchain.blockchains.items():
             self.block_headers.append(value.to_json())
 
     def send_transaction(self, receiver, amount, comment):

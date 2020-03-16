@@ -1,8 +1,9 @@
 # implement merkle tree class here
 
-from transaction import *
+from utils.transaction import *
 import math
 import hashlib
+
 
 class MerkleTree():
     def __init__(self, transactions):
@@ -24,7 +25,8 @@ class MerkleTree():
         leaf_nodes = [str.encode("")]*(2**height)
 
         for i in range(len(self.transactions)):
-            to_hash = str.encode(self.transactions[i].serialize() + "leaf")     # different hashing
+            # different hashing
+            to_hash = str.encode(self.transactions[i].serialize() + "leaf")
             m = hashlib.sha256()
             m.update(to_hash)
             leaf_nodes[i] = m.digest()
@@ -34,8 +36,9 @@ class MerkleTree():
         nonleaf_nodes = []
         for i in range(height):
             new_list = []
-            for i in range(0,len(old_list),2):
-                to_hash = old_list[i] + old_list[i+1] + str.encode("nonleaf")   # different hashing
+            for i in range(0, len(old_list), 2):
+                to_hash = old_list[i] + old_list[i+1] + \
+                    str.encode("nonleaf")   # different hashing
                 m = hashlib.sha256()
                 m.update(to_hash)
                 new_list.append(m.digest())
@@ -44,7 +47,6 @@ class MerkleTree():
             nonleaf_nodes = new_list.copy()
             new_list = []
         self.nonleaf_nodes = nonleaf_nodes      # assign non leaf nodes
-        
 
     def get_proof(self, transaction):
         # Get membership proof for entry
@@ -53,11 +55,11 @@ class MerkleTree():
         except ValueError:
             print("Transaction not in MerkleTree")
             return
-        
+
         tree_ls = self.nonleaf_nodes.copy()
         tree_ls.extend(self.leaf_nodes)
         final_idx = len(self.nonleaf_nodes) + idx
-        if final_idx%2 == 0:
+        if final_idx % 2 == 0:
             final_idx = final_idx - 1
         else:
             final_idx = final_idx + 1
@@ -67,15 +69,15 @@ class MerkleTree():
         while final_idx >= 0:
             proof.append(tree_ls[final_idx])
             proof_idx.append(final_idx)
-            if final_idx%2 == 0:
+            if final_idx % 2 == 0:
                 result = int((final_idx - 2)/2)
-                if result%2 == 0:
+                if result % 2 == 0:
                     final_idx = result - 1
                 else:
                     final_idx = result + 1
             else:
                 result = int((final_idx - 1)/2)
-                if result%2 == 0:
+                if result % 2 == 0:
                     final_idx = result - 1
                 else:
                     final_idx = result + 1
@@ -84,6 +86,7 @@ class MerkleTree():
     def get_root(self):
         # Return the current root
         return self.nonleaf_nodes[0]
+
 
 def verify_proof(entry, proof, root):
     # Verify the proof for the entry and given root. Returns boolean.
@@ -99,7 +102,7 @@ def verify_proof(entry, proof, root):
 
     hash_value = hash_entry
     for i in range(len(proof_ls)):
-        if proof_idx[i]%2 == 0:
+        if proof_idx[i] % 2 == 0:
             to_hash = hash_value + proof_ls[i] + str.encode("nonleaf")
         else:
             to_hash = proof_ls[i] + hash_value + str.encode("nonleaf")
@@ -121,20 +124,19 @@ if __name__ == "__main__":
     for i in range(4):
         sign_key_1 = SigningKey.generate()
         sender = sign_key_1.get_verifying_key()
-        
+
         sign_key_2 = SigningKey.generate()
         receiver = sign_key_2.get_verifying_key()
-        
+
         Tx = Transaction.new(sender, receiver, amount, comment, sign_key_1)
         transactions.append(Tx)
-    
 
     sign_key_1 = SigningKey.generate()
     sender = sign_key_1.get_verifying_key()
-    
+
     sign_key_2 = SigningKey.generate()
     receiver = sign_key_2.get_verifying_key()
-    
+
     Tx = Transaction.new(sender, receiver, amount, comment, sign_key_1)
 
     print(transactions)

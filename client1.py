@@ -1,5 +1,5 @@
-from flask import Flask, render_template, request, redirect
-from spvclient import SPVClient
+from flask import Flask, Response, render_template, request, redirect
+from utils.spvclient import SPVClient
 import requests
 
 app = Flask(__name__)
@@ -15,14 +15,14 @@ def index():
     return render_template('client_index.html', client=client)
 
 
-@app.route('/create')
+@app.route('/create', methods=['POST'])
 def create_client():
     global client
     if (client):
-        return "Already created"
+        return Response(status=202)  # already created
     else:
         client = SPVClient.new('1')
-        return redirect('/')
+        return Response(status=201)
 
 
 @app.route('/test')

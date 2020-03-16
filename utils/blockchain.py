@@ -2,9 +2,9 @@
 import hashlib
 from json import dumps, loads
 
-import block
-from transaction import Transaction
-from block import Block
+import utils.block
+from utils.transaction import Transaction
+from utils.block import Block
 
 
 class Blockchain():
@@ -58,7 +58,7 @@ class Blockchain():
             if not block.validate():
                 return False
         return True
-    
+
     def add_transaction(self, transaction):
         if transaction.validate() and (transaction.tid not in self.tids):
             self.tx_pool.append(transaction)
@@ -85,7 +85,7 @@ class Blockchain():
                 temp_dict[transaction.receiver] = transaction.amount
             else:
                 temp_dict[transaction.receiver] += transaction.amount
-        
+
         return temp_dict
 
     def aggregate_balance(self, blockchain_idx, block_idx):
@@ -99,12 +99,13 @@ class Blockchain():
                 temp_dict[transaction.receiver] = transaction.amount
             else:
                 temp_dict[transaction.receiver] += transaction.amount
-        
+
         return temp_dict
 
     def resolve_fork(self):
         if len(self.blockchains) > 1:
-            max_length = max([len(blockchain) for blockchain in self.blockchains])
+            max_length = max([len(blockchain)
+                              for blockchain in self.blockchains])
             new = []
             for blockchain in self.blockchains:
                 if len(blockchain) == max_length:
@@ -112,13 +113,13 @@ class Blockchain():
 
             self.blockchains = new
 
-    def trace_prev_header(self,prev_header):
-        for i in range (len(self.blockchains)):
-            for j in range (len(self.blockchains[i])):
+    def trace_prev_header(self, prev_header):
+        for i in range(len(self.blockchains)):
+            for j in range(len(self.blockchains[i])):
                 if self.blockchains[i][j].hash_header() == prev_header:
-                    return (i,j)
-                    
-        #meaning prev_header not found in chain
+                    return (i, j)
+
+        # meaning prev_header not found in chain
         return -1
 
 
