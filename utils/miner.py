@@ -34,6 +34,7 @@ class Miner:
         while pow_val >= TARGET:
             block = Block.new(transactions, prev_header)
             pow_val = block.hash_header()
+        
         return block
 
 
