@@ -14,27 +14,29 @@ class Blockchain:
         self.blockchains = [[]]
         self.tx_pool = []
         self.tids = set()
-        self.balance = {}
+        self.balance = [{}]
 
     def add_block(self, block):
         idxs = self.trace_prev_header(block.header["prev_header"])
         if self.validate_block(block, idxs):
-            bc_idx, b_idx = idxs
-            if (b_idx != len(self.blockchains[bc_idx]) - 1):
+            bc_idx, b_idx = 0,0
+            if idxs != -1:
+                bc_idx, b_idx = idxs
+            if (b_idx == len(self.blockchains[bc_idx]) - 1) or b_idx == 0:
+                self.blockchains[bc_idx].append(block)
+            else:
                 temp_blockchain = self.blockchains[bc_idx][:b_idx+1].copy()
                 temp_blockchain.append(block)
                 self.blockchains.append(temp_blockchain)
-            else:
-                self.blockchains[bc_idx].append(block)
 
             self.remove_transaction(block)
             self.add_tids(block)
-            if (idxs[1] != len(self.blockchains[idxs[0]]) - 1):
+            if (b_idx == len(self.blockchains[bc_idx]) - 1) or b_idx == 0:
+                self.balance[bc_idx] = self.update_balance(self.balance[bc_idx], block)
+            else:
                 new_balance = self.aggregate_balance(bc_idx, b_idx)
                 new_balance = self.update_balance(new_balance, block)
                 self.balance[bc_idx] = new_balance
-            else:
-                self.balance[bc_idx] = self.update_balance(self.balance[bc_idx], block)
         else:
             raise ValueError("Could Not Add Block")
 
@@ -44,7 +46,7 @@ class Blockchain:
             return False
         
         # Check if the hash of the header is less than the assigned target
-        header = block.serialize_header()
+        header = block.serialize(True)
         hasher = hashlib.sha256()
         hasher.update(header.encode())
         if not hasher.digest() < Blockchain.target:

@@ -6,6 +6,7 @@ from ecdsa import SigningKey, VerifyingKey, BadSignatureError
 from blockchain import Blockchain
 import time
 import uuid
+from variables import TARGET
 
 
 class Miner:
@@ -22,22 +23,20 @@ class Miner:
             Transaction.new(self.public_key, receiver, amount, comment, self.sign_key)
             )
 
-<<<<<<< HEAD
-    # should check if prev_header in chain
-    def mine(self, transactions, prev_header):
-=======
     #should check if prev_header in chain
     def mine(self, prev_header):
->>>>>>> 82ec22edca170028b122ed1958d1f658386113a6
         global TARGET
         pow_val = TARGET
+        
         transactions = self.blockchain.tx_pool
 #         for transaction in transactions:
 #             transaction.validate()
 
         reward = Transaction.new(None, self.public_key, self.reward, "Reward", None)
         transactions.insert(0, reward)
-        
+
+        print(transactions)
+
         while pow_val >= TARGET:
             block = Block.new(transactions, prev_header)
             pow_val = block.hash_header()
@@ -47,47 +46,65 @@ class Miner:
 
 # to test implementation
 if __name__ == "__main__":
-    transactions = []
-    amount = 1000
-    comment = "COOL!"
-    blockchain = Blockchain()
-    for i in range(4):
-        sign_key_1 = SigningKey.generate()
-        sender = sign_key_1.get_verifying_key()
-        
-        sign_key_2 = SigningKey.generate()
-        receiver = sign_key_2.get_verifying_key()
-        
-        Tx = Transaction.new(sender, receiver, amount, comment, sign_key_1)
-        blockchain.add_transaction(Tx)
-
     TARGET = b'\x00\x00\xff\xff' + b'\xff'*28
 
+    blockchain = Blockchain()
+
+    print(blockchain.blockchains)
 
     sign_key = SigningKey.generate()
-    public_key = sign_key_1.get_verifying_key()
+    public_key = sign_key.get_verifying_key()
 
-    print(type(blockchain))
+    miner = Miner(blockchain, sign_key, public_key)
 
-    print("Chain:")
+    block = miner.mine(b'genesis block')
+
+    blockchain.add_block(block)
+
     print(blockchain.blockchains)
 
-    print("txpool")
-    print(blockchain.tx_pool)
 
-    print("tids")
-    print(blockchain.tids)
+    # transactions = []
+    # amount = 1000
+    # comment = "COOL!"
+    # blockchain = Blockchain()
+    # for i in range(4):
+    #     sign_key_1 = SigningKey.generate()
+    #     sender = sign_key_1.get_verifying_key()
+        
+    #     sign_key_2 = SigningKey.generate()
+    #     receiver = sign_key_2.get_verifying_key()
+        
+    #     Tx = Transaction.new(sender, receiver, amount, comment, sign_key_1)
+    #     blockchain.add_transaction(Tx)
 
-    miner = Miner(blockchain, public_key, sign_key)
-    t1 = time.time()
-    blockchain.add_block(miner.mine(b'genesis block'))
-    print(time.time()-t1)
+    # TARGET = b'\x00\x00\xff\xff' + b'\xff'*28
 
-    print("Chain:")
-    print(blockchain.blockchains)
 
-    print("txpool")
-    print(blockchain.tx_pool)
+    # sign_key = SigningKey.generate()
+    # public_key = sign_key_1.get_verifying_key()
 
-    print("tids")
-    print(blockchain.tids)
+    # print(type(blockchain))
+
+    # print("Chain:")
+    # print(blockchain.blockchains)
+
+    # print("txpool")
+    # print(blockchain.tx_pool)
+
+    # print("tids")
+    # print(blockchain.tids)
+
+    # miner = Miner(blockchain, public_key, sign_key)
+    # t1 = time.time()
+    # blockchain.add_block(miner.mine(b'genesis block'))
+    # print(time.time()-t1)
+
+    # print("Chain:")
+    # print(blockchain.blockchains)
+
+    # print("txpool")
+    # print(blockchain.tx_pool)
+
+    # print("tids")
+    # print(blockchain.tids)
