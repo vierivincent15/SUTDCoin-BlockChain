@@ -3,12 +3,11 @@ import hashlib
 from json import dumps, loads
 from transaction import Transaction
 from block import Block
-
+from config import TARGET
 
 class Blockchain:
 
     # target = b"\x00\x00\x0f\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff"
-    target = b"\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff"
 
     def __init__(self):
         self.blockchains = [[]]
@@ -41,6 +40,7 @@ class Blockchain:
             raise ValueError("Could Not Add Block")
 
     def validate_block(self, block, idxs):
+        global TARGET
         # Check if it satisfy Block class validation
         if not block.validate():
             return False
@@ -49,7 +49,7 @@ class Blockchain:
         header = block.serialize(True)
         hasher = hashlib.sha256()
         hasher.update(header.encode())
-        if not hasher.digest() < Blockchain.target:
+        if not hasher.digest() < TARGET:
             return False
 
         # check genesis block then don't need to check for prev header

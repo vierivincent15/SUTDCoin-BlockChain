@@ -6,7 +6,7 @@ from ecdsa import SigningKey, VerifyingKey, BadSignatureError
 from blockchain import Blockchain
 import time
 import uuid
-from variables import TARGET
+from config import TARGET
 
 
 class Miner:
