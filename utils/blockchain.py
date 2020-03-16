@@ -42,16 +42,7 @@ class Blockchain:
         # Check if it satisfy Block class validation
         if not block.validate():
             return False
-<<<<<<< HEAD
-        # Check if the stored hash of previous header
-        # is the same as the actual hash of previous header in the blockchain
-
-        # if not self.blockchain[self.chain_length-1].serialize_header() == block.header["hash_prev_header"]:
-        #     return False
-
-=======
         
->>>>>>> 82ec22edca170028b122ed1958d1f658386113a6
         # Check if the hash of the header is less than the assigned target
         header = block.serialize_header()
         hasher = hashlib.sha256()
