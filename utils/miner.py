@@ -18,7 +18,7 @@ class Miner:
         self.sign_key = sign_key
     
     def transact(self, receiver, amount, comment="COOL!"):
-        return Transaction.new(self.public_key, receiver, amount, comment, self.sign_key)
+        self.bTransaction.new(self.public_key, receiver, amount, comment, self.sign_key)
 
     #should check if prev_header in chain
     def mine(self, transactions, prev_header):
