@@ -20,7 +20,7 @@ class Miner:
     def transact(self, receiver, amount, comment="COOL!"):
         return Transaction.new(self.public_key, receiver, amount, comment, self.sign_key)
 
-    #should check if prev_header in chain
+    # should check if prev_header in chain
     def mine(self, transactions, prev_header):
         global TARGET
         pow_val = TARGET
@@ -29,7 +29,7 @@ class Miner:
 #             transaction.validate()
 
         reward = Transaction.new(None, self.public_key, self.reward, "Reward", None)
-        transactions.insert(0,reward)
+        transactions.insert(0, reward)
         
         while pow_val >= TARGET:
             block = Block.new(transactions, prev_header)

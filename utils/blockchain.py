@@ -1,13 +1,11 @@
 # implement blockchain class here
 import hashlib
 from json import dumps, loads
-
-import block
 from transaction import Transaction
 from block import Block
 
 
-class Blockchain():
+class Blockchain:
 
     # target = b"\x00\x00\x0f\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff"
     target = b"\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff"
@@ -41,7 +39,9 @@ class Blockchain():
         # blockchain is not valid
         if not block.validate():
             return False
-        # Check if the stored hash of previous header is the same as the actual hash of previous header in the blockchain
+        # Check if the stored hash of previous header
+        # is the same as the actual hash of previous header in the blockchain
+
         # if not self.blockchain[self.chain_length-1].serialize_header() == block.header["hash_prev_header"]:
         #     return False
 
@@ -58,7 +58,7 @@ class Blockchain():
             if not block.validate():
                 return False
         return True
-    
+
     def add_transaction(self, transaction):
         if transaction.validate() and (transaction.tid not in self.tids):
             self.tx_pool.append(transaction)
@@ -116,9 +116,9 @@ class Blockchain():
         for i in range (len(self.blockchains)):
             for j in range (len(self.blockchains[i])):
                 if self.blockchains[i][j].hash_header() == prev_header:
-                    return (i,j)
+                    return (i, j)
                     
-        #meaning prev_header not found in chain
+        # meaning prev_header not found in chain
         return -1
 
 
