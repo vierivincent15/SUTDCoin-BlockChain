@@ -15,7 +15,7 @@ class Blockchain:
         self.tids = set()
         self.balance = [{}]
 
-    def add_block(self, block):
+    def add_block(self, block):        
         idxs = self.trace_prev_header(block.header["prev_header"])
         if self.validate_block(block, idxs):
             bc_idx, b_idx = 0,0
@@ -98,11 +98,14 @@ class Blockchain:
     def update_balance(self, balance, block):
         temp_dict = balance.copy()
         for transaction in block.transactions:
-            temp_dict[transaction.sender] -= transaction.amount
-            if transaction.receiver not in temp_dict:
-                temp_dict[transaction.receiver] = transaction.amount
+            if transaction.sender is not None:
+                sender = transaction.sender.to_string().hex()
+                temp_dict[sender] -= transaction.amount
+            receiver = transaction.receiver.to_string().hex()
+            if receiver not in temp_dict:
+                temp_dict[receiver] = transaction.amount
             else:
-                temp_dict[transaction.receiver] += transaction.amount
+                temp_dict[receiver] += transaction.amount
         
         return temp_dict
         
@@ -113,11 +116,14 @@ class Blockchain:
 
         temp_dict = {}
         for transaction in self.blockchains[blockchain_idx][:block_idx+1]:
-            temp_dict[transaction.sender] -= transaction.amount
-            if transaction.receiver not in temp_dict:
-                temp_dict[transaction.receiver] = transaction.amount
+            if transaction.sender is not None:
+                sender = transaction.sender.to_string().hex()
+                temp_dict[sender] -= transaction.amount
+            receiver = transaction.receiver.to_string().hex()
+            if receiver not in temp_dict:
+                temp_dict[receiver] = transaction.amount
             else:
-                temp_dict[transaction.receiver] += transaction.amount
+                temp_dict[receiver] += transaction.amount
         
         return temp_dict
 
