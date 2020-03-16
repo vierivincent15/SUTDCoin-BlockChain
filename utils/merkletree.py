@@ -85,6 +85,8 @@ class MerkleTree():
 
     def get_root(self):
         # Return the current root
+        if len(self.transactions) == 1:
+            return self.leaf_nodes[0]
         return self.nonleaf_nodes[0]
 
 
@@ -118,31 +120,38 @@ def verify_proof(entry, proof, root):
 
 # to test implementation
 if __name__ == "__main__":
-    transactions = []
-    amount = 1000
-    comment = "COOL!"
-    for i in range(4):
-        sign_key_1 = SigningKey.generate()
-        sender = sign_key_1.get_verifying_key()
+    sign_key = SigningKey.generate()
+    public_key = sign_key.get_verifying_key()
 
-        sign_key_2 = SigningKey.generate()
-        receiver = sign_key_2.get_verifying_key()
+    transactions = [Transaction.new(None, public_key, 100, "Reward", None)]
 
-        Tx = Transaction.new(sender, receiver, amount, comment, sign_key_1)
-        transactions.append(Tx)
+    tree = MerkleTree(transactions)
+    print(tree.get_root())
+    # transactions = []
+    # amount = 1000
+    # comment = "COOL!"
+    # for i in range(4):
+    #     sign_key_1 = SigningKey.generate()
+    #     sender = sign_key_1.get_verifying_key()
 
-    sign_key_1 = SigningKey.generate()
-    sender = sign_key_1.get_verifying_key()
+    #     sign_key_2 = SigningKey.generate()
+    #     receiver = sign_key_2.get_verifying_key()
 
-    sign_key_2 = SigningKey.generate()
-    receiver = sign_key_2.get_verifying_key()
+    #     Tx = Transaction.new(sender, receiver, amount, comment, sign_key_1)
+    #     transactions.append(Tx)
 
-    Tx = Transaction.new(sender, receiver, amount, comment, sign_key_1)
+    # sign_key_1 = SigningKey.generate()
+    # sender = sign_key_1.get_verifying_key()
 
-    print(transactions)
-    print(transactions[2])
-    transactions.remove(Tx)
-    print(transactions)
-    # tree = MerkleTree(transactions)
-    # print(tree)
-    # print(transactions[0].validate())
+    # sign_key_2 = SigningKey.generate()
+    # receiver = sign_key_2.get_verifying_key()
+
+    # Tx = Transaction.new(sender, receiver, amount, comment, sign_key_1)
+
+    # print(transactions)
+    # print(transactions[2])
+    # transactions.remove(Tx)
+    # print(transactions)
+    # # tree = MerkleTree(transactions)
+    # # print(tree)
+    # # print(transactions[0].validate())

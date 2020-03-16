@@ -31,7 +31,7 @@ class Block:
         data = {}
         if not header_mode:
             data['transactions'] = [transaction.serialize()
-                                    for transaction in transactions]
+                                    for transaction in self.transactions]
         data['header'] = {
             'prev_header': self.header['prev_header'].hex(),
             'tree_root': self.header['tree_root'].hex(),
@@ -64,25 +64,33 @@ class Block:
             boolean = transaction.validate()
             if not boolean:
                 return boolean
-        return self.header['tree_root'] == MerkleTree(transactions).get_root()
+        return self.header['tree_root'] == MerkleTree(self.transactions).get_root()
 
 
 # to test implementation
 if __name__ == "__main__":
-    transactions = []
-    amount = 1000
-    comment = "COOL!"
-    for i in range(4):
-        sign_key_1 = SigningKey.generate()
-        sender = sign_key_1.get_verifying_key()
 
-        sign_key_2 = SigningKey.generate()
-        receiver = sign_key_2.get_verifying_key()
+    sign_key = SigningKey.generate()
+    public_key = sign_key.get_verifying_key()
 
-        Tx = Transaction.new(sender, receiver, amount, comment, sign_key_1)
-        transactions.append(Tx)
+    transactions = [Transaction.new(None, public_key, 100, "Reward", None)]
 
-    TARGET = b'\x00\x00\xff\xff' + b'\xff'*28
+    Block.new(transactions, b'aaa')
 
-    block1 = Block.new(transactions, b'genesis block')
-    print(block1.header)
+    # transactions = []
+    # amount = 1000
+    # comment = "COOL!"
+    # for i in range(4):
+    #     sign_key_1 = SigningKey.generate()
+    #     sender = sign_key_1.get_verifying_key()
+
+    #     sign_key_2 = SigningKey.generate()
+    #     receiver = sign_key_2.get_verifying_key()
+
+    #     Tx = Transaction.new(sender, receiver, amount, comment, sign_key_1)
+    #     transactions.append(Tx)
+
+    # TARGET = b'\x00\x00\xff\xff' + b'\xff'*28
+
+    # block1 = Block.new(transactions, b'genesis block')
+    # print(block1.header)
