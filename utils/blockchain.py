@@ -157,6 +157,9 @@ class Blockchain:
         # meaning prev_header not found in chain
         return -1
 
+    def get_prev_header(self, bc_idx, b_idx):
+        return self.blockchains[bc_idx][b_idx].hash_header()
+
 
 # to test implementation
 if __name__ == "__main__":

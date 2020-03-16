@@ -24,16 +24,26 @@ class Miner:
         self.reward = 100
         self.sign_key = sign_key
 
-    def transact(self, receiver, amount, comment="COOL!"):
+    def send_transaction(self, receiver, amount, comment="COOL!"):
         Tx = Transaction.new(self.public_key, receiver,
                              amount, comment, self.sign_key)
         self.blockchain.add_transaction(Tx)
         return Tx
 
     # should check if prev_header in chain
-    def mine(self, prev_header):
+    def mine(self, prev_header=None, bc_idx=0, b_idx=-1):
         global TARGET
         pow_val = TARGET
+
+        if prev_header is None:
+            if bc_idx < len(self.blockchain.blockchains):
+                if b_idx < len(self.blockchain.blockchains[bc_idx]):
+                    prev_header = self.blockchain.get_prev_header(
+                        bc_idx, b_idx)
+                else:
+                    raise IndexError
+            else:
+                raise IndexError
 
         transactions = self.blockchain.tx_pool.copy()
 #         for transaction in transactions:

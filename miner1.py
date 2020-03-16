@@ -15,6 +15,13 @@ sign_key = SigningKey.generate()
 public_key = sign_key.get_verifying_key()
 miner = Miner(blockchain, public_key, sign_key)
 
+# TODO: change to predefined private key
+miner2_priv_key = SigningKey.generate()
+miner2_public_key = sign_key.get_verifying_key()
+public_keys = {
+    'miner2': miner2_public_key
+}
+
 
 @app.route('/')
 def index():
@@ -41,12 +48,13 @@ def mine_genesis():
 
 @app.route('/send', methods=['POST'])
 def send_transaction():
-    response = requests.post(
-        miner1+'/add',
-        data={'miner': 'miner1'}
-    )
-    print(response)
-    return "k"
+    global miner
+    receiver = request.form['receiver']
+    amount = request.form['amount']
+
+    tx = miner.send_transaction(public_keys[receiver], amount)
+    print(tx)
+    return Response(status=200)
 
 
 if __name__ == "__main__":

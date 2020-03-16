@@ -30,7 +30,11 @@ if(response.status_code == 201):
 else:
     print("Error")
 
+
 response = requests.post(
     miner1+'/send',
-    data={}
+    data={
+        'receiver': 'miner2',
+        'amount': 100
+    }
 )
