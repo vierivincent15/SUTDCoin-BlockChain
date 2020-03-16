@@ -1,12 +1,18 @@
-# implement miner class here
-from utils.merkletree import MerkleTree
-from utils.transaction import Transaction
-from utils.block import Block
+try:
+    from merkletree import MerkleTree
+    from transaction import Transaction
+    from block import Block
+    from blockchain import Blockchain
+    from config import TARGET
+except:
+    from utils.merkletree import MerkleTree
+    from utils.transaction import Transaction
+    from utils.block import Block
+    from utils.blockchain import Blockchain
+    from utils.config import TARGET
 from ecdsa import SigningKey, VerifyingKey, BadSignatureError
-from utils.blockchain import Blockchain
 import time
 import uuid
-from utils.config import TARGET
 
 
 class Miner:
@@ -19,31 +25,33 @@ class Miner:
         self.sign_key = sign_key
 
     def transact(self, receiver, amount, comment="COOL!"):
-        self.blockchain.add_transaction(
-            Transaction.new(self.public_key, receiver,
-                            amount, comment, self.sign_key)
-        )
+        Tx = Transaction.new(self.public_key, receiver,
+                             amount, comment, self.sign_key)
+        self.blockchain.add_transaction(Tx)
+        return Tx
 
     # should check if prev_header in chain
     def mine(self, prev_header):
         global TARGET
         pow_val = TARGET
 
-        transactions = self.blockchain.tx_pool
+        transactions = self.blockchain.tx_pool.copy()
 #         for transaction in transactions:
 #             transaction.validate()
-
         reward = Transaction.new(
             None, self.public_key, self.reward, "Reward", None)
         transactions.insert(0, reward)
-
-        print(transactions)
 
         while pow_val >= TARGET:
             block = Block.new(transactions, prev_header)
             pow_val = block.hash_header()
 
-        return block
+        try:
+            self.blockchain.add_block(block)
+            status = True
+        except ValueError:
+            status = False
+        return block, status
 
 
 # to test implementation
@@ -58,11 +66,11 @@ if __name__ == "__main__":
     public_key = sign_key.get_verifying_key()
 
     miner = Miner(blockchain, sign_key, public_key)
-
+    t1 = time.time()
     block = miner.mine(b'genesis block')
 
     blockchain.add_block(block)
-
+    print(time.time()-t1)
     print(blockchain.blockchains)
 
     # transactions = []

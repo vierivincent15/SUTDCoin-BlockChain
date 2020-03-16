@@ -1,6 +1,8 @@
 # implement merkle tree class here
-
-from utils.transaction import *
+try:
+    from transaction import *
+except:
+    from utils.transaction import *
 import math
 import hashlib
 

@@ -1,10 +1,12 @@
-# implement block class here
+try:
+    from merkletree import MerkleTree
+    from transaction import Transaction
+except:
+    from utils.merkletree import MerkleTree
+    from utils.transaction import Transaction
+from ecdsa import SigningKey
 import hashlib
 import json
-
-from ecdsa import SigningKey
-from utils.merkletree import MerkleTree
-from utils.transaction import Transaction
 import time
 import uuid
 

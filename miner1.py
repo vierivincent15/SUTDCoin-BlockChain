@@ -3,6 +3,7 @@ from utils.miner import Miner
 from utils.block import Block
 from utils.blockchain import Blockchain
 from utils.transaction import Transaction
+from network_protocol import broadcast
 from ecdsa import SigningKey, VerifyingKey, BadSignatureError
 import requests
 
@@ -15,15 +16,6 @@ public_key = sign_key.get_verifying_key()
 miner = Miner(blockchain, public_key, sign_key)
 
 
-def broadcast(json_block):
-    global miners
-    for miner in miners:
-        response = requests.post(
-            miner+'/init',
-            data={'block': json_block}
-        )
-
-
 @app.route('/')
 def index():
     global miner
@@ -33,15 +25,15 @@ def index():
 
 @app.route('/init', methods=['POST'])
 def mine_genesis():
+    global miners
     global miner
 
-    block = miner.mine(b'genesis block')
+    block, status = miner.mine(b'genesis block')
     json_data = block.serialize()
-    miner.blockchain.add_block(block)
     print(miner.blockchain.blockchains)
 
     response = Response(response=json_data, status=201)
-    broadcast(json_data)
+    broadcast(miners, json_data, '/init')
 
     return response
 

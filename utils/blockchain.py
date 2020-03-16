@@ -1,9 +1,13 @@
-# implement blockchain class here
-import hashlib
+try:
+    from transaction import Transaction
+    from block import Block
+    from config import TARGET
+except:
+    from utils.transaction import Transaction
+    from utils.block import Block
+    from utils.config import TARGET
 from json import dumps, loads
-from utils.transaction import Transaction
-from utils.block import Block
-from utils.config import TARGET
+import hashlib
 
 
 class Blockchain:
@@ -99,11 +103,14 @@ class Blockchain:
     def update_balance(self, balance, block):
         temp_dict = balance.copy()
         for transaction in block.transactions:
-            temp_dict[transaction.sender] -= transaction.amount
-            if transaction.receiver not in temp_dict:
-                temp_dict[transaction.receiver] = transaction.amount
+            if transaction.sender is not None:
+                sender = transaction.sender.to_string().hex()
+                temp_dict[sender] -= transaction.amount
+            receiver = transaction.receiver.to_string().hex()
+            if receiver not in temp_dict:
+                temp_dict[receiver] = transaction.amount
             else:
-                temp_dict[transaction.receiver] += transaction.amount
+                temp_dict[receiver] += transaction.amount
 
         return temp_dict
 
@@ -113,11 +120,14 @@ class Blockchain:
 
         temp_dict = {}
         for transaction in self.blockchains[blockchain_idx][:block_idx+1]:
-            temp_dict[transaction.sender] -= transaction.amount
-            if transaction.receiver not in temp_dict:
-                temp_dict[transaction.receiver] = transaction.amount
+            if transaction.sender is not None:
+                sender = transaction.sender.to_string().hex()
+                temp_dict[sender] -= transaction.amount
+            receiver = transaction.receiver.to_string().hex()
+            if receiver not in temp_dict:
+                temp_dict[receiver] = transaction.amount
             else:
-                temp_dict[transaction.receiver] += transaction.amount
+                temp_dict[receiver] += transaction.amount
 
         return temp_dict
 
