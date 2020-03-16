@@ -9,7 +9,6 @@ class Blockchain:
 
     # target = b"\x00\x00\x0f\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff"
     target = b"\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff"
-    difficulty = 2
 
     def __init__(self):
         self.blockchains = [[]]
@@ -18,49 +17,75 @@ class Blockchain:
         self.balance = {}
 
     def add_block(self, block):
-        if self.validate_block(block):
-            self.blockchain.append(block)
-            self.chain_length += 1
+        idxs = self.trace_prev_header(block.header["prev_header"])
+        if self.validate_block(block, idxs):
+            bc_idx, b_idx = idxs
+            if (b_idx != len(self.blockchains[bc_idx]) - 1):
+                temp_blockchain = self.blockchains[bc_idx][:b_idx+1].copy()
+                temp_blockchain.append(block)
+                self.blockchains.append(temp_blockchain)
+            else:
+                self.blockchains[bc_idx].append(block)
+
+            self.remove_transaction(block)
+            self.add_tids(block)
+            if (idxs[1] != len(self.blockchains[idxs[0]]) - 1):
+                new_balance = self.aggregate_balance(bc_idx, b_idx)
+                new_balance = self.update_balance(new_balance, block)
+                self.balance[bc_idx] = new_balance
+            else:
+                self.balance[bc_idx] = self.update_balance(self.balance[bc_idx], block)
         else:
             raise ValueError("Could Not Add Block")
 
-    def validate_block(self, block):
+    def validate_block(self, block, idxs):
         # Check if it satisfy Block class validation
-
-        # check genesis block then don't need to check for prev header
-        if len(self.blockchain) == 0:
-            return True
-
-        # check if previous header
-        prev_hash = self.blockchain[-1]
-        if prev_hash != block.hash_header():
-            return False
-
-        # blockchain is not valid
         if not block.validate():
             return False
+<<<<<<< HEAD
         # Check if the stored hash of previous header
         # is the same as the actual hash of previous header in the blockchain
 
         # if not self.blockchain[self.chain_length-1].serialize_header() == block.header["hash_prev_header"]:
         #     return False
 
+=======
+        
+>>>>>>> 82ec22edca170028b122ed1958d1f658386113a6
         # Check if the hash of the header is less than the assigned target
         header = block.serialize_header()
         hasher = hashlib.sha256()
         hasher.update(header.encode())
         if not hasher.digest() < Blockchain.target:
             return False
+
+        # check genesis block then don't need to check for prev header
+        if not any(self.blockchains):
+            return True
+
+        # check for prev_header existence
+        if idxs == -1:
+            return False
+
+        # check for non-negative balance
+        temp_balance = self.aggregate_balance(idxs[0], idxs[1])
+        temp_balance = self.update_balance(temp_balance, block)
+        for val in temp_balance.values():
+            if val < 0:
+                return False
+
         return True
 
+
     def validate(self):
-        for block in self.blockchain:
-            if not block.validate():
-                return False
+        for blockchain in self.blockchains:
+            for block in blockchain:
+                if not block.validate():
+                    return False
         return True
 
     def add_transaction(self, transaction):
-        if transaction.validate() and (transaction.tid not in self.tids):
+        if transaction.validate() and (transaction.tid not in self.tids) and (transaction.tid not in self.tx_pool):
             self.tx_pool.append(transaction)
 
     # to add in to add block later
@@ -77,8 +102,8 @@ class Blockchain:
             self.tids.add(transaction.tid)
 
     # to add in to add block later
-    def update_balance(self, block):
-        temp_dict = self.balance.copy()
+    def update_balance(self, balance, block):
+        temp_dict = balance.copy()
         for transaction in block.transactions:
             temp_dict[transaction.sender] -= transaction.amount
             if transaction.receiver not in temp_dict:
@@ -87,6 +112,7 @@ class Blockchain:
                 temp_dict[transaction.receiver] += transaction.amount
         
         return temp_dict
+        
 
     def aggregate_balance(self, blockchain_idx, block_idx):
         # I need the blockchain index as well as the block index for this function
@@ -120,7 +146,6 @@ class Blockchain:
                     
         # meaning prev_header not found in chain
         return -1
-
 
 # to test implementation
 if __name__ == "__main__":
