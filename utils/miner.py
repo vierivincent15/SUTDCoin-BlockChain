@@ -22,8 +22,13 @@ class Miner:
             Transaction.new(self.public_key, receiver, amount, comment, self.sign_key)
             )
 
+<<<<<<< HEAD
+    # should check if prev_header in chain
+    def mine(self, transactions, prev_header):
+=======
     #should check if prev_header in chain
     def mine(self, prev_header):
+>>>>>>> 82ec22edca170028b122ed1958d1f658386113a6
         global TARGET
         pow_val = TARGET
         transactions = self.blockchain.tx_pool
@@ -31,7 +36,7 @@ class Miner:
 #             transaction.validate()
 
         reward = Transaction.new(None, self.public_key, self.reward, "Reward", None)
-        transactions.insert(0,reward)
+        transactions.insert(0, reward)
         
         while pow_val >= TARGET:
             block = Block.new(transactions, prev_header)
