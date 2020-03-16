@@ -3,8 +3,8 @@ import hashlib
 import json
 
 from ecdsa import SigningKey
-from merkletree import *
-from transaction import *
+from merkletree import MerkleTree
+from transaction import Transaction
 import time
 import uuid
 
