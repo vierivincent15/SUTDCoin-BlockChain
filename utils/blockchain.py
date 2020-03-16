@@ -140,7 +140,6 @@ class Blockchain():
         #meaning prev_header not found in chain
         return -1
 
-
 # to test implementation
 if __name__ == "__main__":
     pass

@@ -58,9 +58,9 @@ class Block:
         return cls(transactions, None, header)
 
     def validate(self):
-        global TARGET
         boolean = True
-        for transaction in self.transactions:
+        for i in range(1,len(self.transactions)):
+            transaction = self.transactions[i]
             boolean = transaction.validate()
             if not boolean:
                 return boolean
