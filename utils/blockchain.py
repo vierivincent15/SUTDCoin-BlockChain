@@ -1,9 +1,14 @@
-# implement blockchain class here
-import hashlib
+try:
+    from transaction import Transaction
+    from block import Block
+    from config import TARGET
+except:
+    from utils.transaction import Transaction
+    from utils.block import Block
+    from utils.config import TARGET
 from json import dumps, loads
-from transaction import Transaction
-from block import Block
-from config import TARGET
+import hashlib
+
 
 class Blockchain:
 
@@ -15,10 +20,10 @@ class Blockchain:
         self.tids = set()
         self.balance = [{}]
 
-    def add_block(self, block):        
+    def add_block(self, block):
         idxs = self.trace_prev_header(block.header["prev_header"])
         if self.validate_block(block, idxs):
-            bc_idx, b_idx = 0,0
+            bc_idx, b_idx = 0, 0
             if idxs != -1:
                 bc_idx, b_idx = idxs
             if (b_idx == len(self.blockchains[bc_idx]) - 1) or b_idx == 0:
@@ -31,7 +36,8 @@ class Blockchain:
             self.remove_transaction(block)
             self.add_tids(block)
             if (b_idx == len(self.blockchains[bc_idx]) - 1) or b_idx == 0:
-                self.balance[bc_idx] = self.update_balance(self.balance[bc_idx], block)
+                self.balance[bc_idx] = self.update_balance(
+                    self.balance[bc_idx], block)
             else:
                 new_balance = self.aggregate_balance(bc_idx, b_idx)
                 new_balance = self.update_balance(new_balance, block)
@@ -44,7 +50,7 @@ class Blockchain:
         # Check if it satisfy Block class validation
         if not block.validate():
             return False
-        
+
         # Check if the hash of the header is less than the assigned target
         header = block.serialize(True)
         hasher = hashlib.sha256()
@@ -105,9 +111,13 @@ class Blockchain:
                 temp_dict[receiver] = transaction.amount
             else:
                 temp_dict[receiver] += transaction.amount
-        
+
         return temp_dict
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> 30671e298a90d4b055afee658cb718d7616432f5
     def aggregate_balance(self, blockchain_idx, block_idx):
         # I need the blockchain index as well as the block index for this function
         # If block header is given, the index will be recomputed twice
@@ -128,7 +138,8 @@ class Blockchain:
 
     def resolve_fork(self):
         if len(self.blockchains) > 1:
-            max_length = max([len(blockchain) for blockchain in self.blockchains])
+            max_length = max([len(blockchain)
+                              for blockchain in self.blockchains])
             new = []
             new_balance = {}
             counter = 0
@@ -141,17 +152,20 @@ class Blockchain:
             self.blockchains = new
             self.balance = new_balance
 
-    def trace_prev_header(self,prev_header):
-        for i in range (len(self.blockchains)):
-            for j in range (len(self.blockchains[i])):
+    def trace_prev_header(self, prev_header):
+        for i in range(len(self.blockchains)):
+            for j in range(len(self.blockchains[i])):
                 if self.blockchains[i][j].hash_header() == prev_header:
                     return (i, j)
-                    
+
         # meaning prev_header not found in chain
         return -1
 
+<<<<<<< HEAD
     def get_prev_header(self, bc_idx, b_idx):
         return self.blockchains[bc_idx][b_idx].hash_header()
+=======
+>>>>>>> 30671e298a90d4b055afee658cb718d7616432f5
 
 # to test implementation
 if __name__ == "__main__":

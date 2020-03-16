@@ -1,12 +1,18 @@
-# implement miner class here
-from merkletree import MerkleTree
-from transaction import Transaction
-from block import Block
+try:
+    from merkletree import MerkleTree
+    from transaction import Transaction
+    from block import Block
+    from blockchain import Blockchain
+    from config import TARGET
+except:
+    from utils.merkletree import MerkleTree
+    from utils.transaction import Transaction
+    from utils.block import Block
+    from utils.blockchain import Blockchain
+    from utils.config import TARGET
 from ecdsa import SigningKey, VerifyingKey, BadSignatureError
-from blockchain import Blockchain
 import time
 import uuid
-from config import TARGET
 
 
 class Miner:
@@ -17,12 +23,14 @@ class Miner:
         self.public_key = public_key
         self.reward = 100
         self.sign_key = sign_key
-    
+
     def transact(self, receiver, amount, comment="COOL!"):
-        Tx = Transaction.new(self.public_key, receiver, amount, comment, self.sign_key)
+        Tx = Transaction.new(self.public_key, receiver,
+                             amount, comment, self.sign_key)
         self.blockchain.add_transaction(Tx)
         return Tx
 
+<<<<<<< HEAD
     #should check if prev_header in chain
     def mine(self, prev_header=None, bc_idx=0, b_idx=-1):
         global TARGET
@@ -36,17 +44,24 @@ class Miner:
                     raise IndexError
             else:
                 raise IndexError
+=======
+    # should check if prev_header in chain
+    def mine(self, prev_header):
+        global TARGET
+        pow_val = TARGET
+>>>>>>> 30671e298a90d4b055afee658cb718d7616432f5
 
         transactions = self.blockchain.tx_pool.copy()
 #         for transaction in transactions:
 #             transaction.validate()
-        reward = Transaction.new(None, self.public_key, self.reward, "Reward", None)
+        reward = Transaction.new(
+            None, self.public_key, self.reward, "Reward", None)
         transactions.insert(0, reward)
 
         while pow_val >= TARGET:
             block = Block.new(transactions, prev_header)
             pow_val = block.hash_header()
-        
+
         try:
             self.blockchain.add_block(block)
             status = True
@@ -74,7 +89,6 @@ if __name__ == "__main__":
     print(time.time()-t1)
     print(blockchain.blockchains)
 
-
     # transactions = []
     # amount = 1000
     # comment = "COOL!"
@@ -82,15 +96,14 @@ if __name__ == "__main__":
     # for i in range(4):
     #     sign_key_1 = SigningKey.generate()
     #     sender = sign_key_1.get_verifying_key()
-        
+
     #     sign_key_2 = SigningKey.generate()
     #     receiver = sign_key_2.get_verifying_key()
-        
+
     #     Tx = Transaction.new(sender, receiver, amount, comment, sign_key_1)
     #     blockchain.add_transaction(Tx)
 
     # TARGET = b'\x00\x00\xff\xff' + b'\xff'*28
-
 
     # sign_key = SigningKey.generate()
     # public_key = sign_key_1.get_verifying_key()

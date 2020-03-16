@@ -1,10 +1,12 @@
-# implement block class here
+try:
+    from merkletree import MerkleTree
+    from transaction import Transaction
+except:
+    from utils.merkletree import MerkleTree
+    from utils.transaction import Transaction
+from ecdsa import SigningKey
 import hashlib
 import json
-
-from ecdsa import SigningKey
-from merkletree import MerkleTree
-from transaction import Transaction
 import time
 import uuid
 
@@ -31,7 +33,7 @@ class Block:
         data = {}
         if not header_mode:
             data['transactions'] = [transaction.serialize()
-                                    for transaction in transactions]
+                                    for transaction in self.transactions]
         data['header'] = {
             'prev_header': self.header['prev_header'].hex(),
             'tree_root': self.header['tree_root'].hex(),
@@ -59,7 +61,7 @@ class Block:
 
     def validate(self):
         boolean = True
-        for i in range(1,len(self.transactions)):
+        for i in range(1, len(self.transactions)):
             transaction = self.transactions[i]
             boolean = transaction.validate()
             if not boolean:
@@ -69,7 +71,7 @@ class Block:
 
 # to test implementation
 if __name__ == "__main__":
-    
+
     sign_key = SigningKey.generate()
     public_key = sign_key.get_verifying_key()
 
@@ -86,11 +88,11 @@ if __name__ == "__main__":
 
     #     sign_key_2 = SigningKey.generate()
     #     receiver = sign_key_2.get_verifying_key()
-        
+
     #     Tx = Transaction.new(sender, receiver, amount, comment, sign_key_1)
     #     transactions.append(Tx)
 
     # TARGET = b'\x00\x00\xff\xff' + b'\xff'*28
-    
+
     # block1 = Block.new(transactions, b'genesis block')
     # print(block1.header)
