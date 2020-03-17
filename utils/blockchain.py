@@ -188,7 +188,7 @@ class Blockchain:
         for block in self.blockchains[self.true_blockchain]:
             if transaction in block.transactions:
                 mt = MerkleTree(block.transactions)
-                return mt.get_proof(transaction)
+                return (mt.get_proof(transaction), mt.get_root())
 
     def __str__(self):
         out = ""
