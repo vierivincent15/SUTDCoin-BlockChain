@@ -37,6 +37,7 @@ def start_mine():
     global miners, miner
 
     while True:
+        print("Mining")
         block = miner.mine()
         if (block):
             json_data = block.serialize()
@@ -48,11 +49,13 @@ def start_mine():
 
 @app.route('/recv_block', methods=['POST'])
 def receive_block():
-    global miner
+    global miner, blockchain
 
     json_block = request.form['block']
     block = Block.deserialize(json_block)
     blockchain.add_block(block)
+
+    return Response(status=200)
 
 
 @app.route('/send', methods=['POST'])
