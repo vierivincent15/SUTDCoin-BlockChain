@@ -133,6 +133,17 @@ class Blockchain:
         return temp_dict
 
     def resolve_fork(self):
+        if len(self.blockchains[0]) == 0:
+            return b'genesis block'
+        chain_length = [len(chain) for chain in self.blockchains]
+        max_index = chain_length.index(max(chain_length))
+
+        max_chain = self.blockchains[max_index]
+
+        return max_chain[-1].hash_header()
+        
+
+    def resolve_fork_old(self):
         if len(self.blockchains) > 1:
             max_length = max([len(blockchain)
                               for blockchain in self.blockchains])

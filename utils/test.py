@@ -10,32 +10,27 @@ sign_key = SigningKey.generate()
 public_key = sign_key.get_verifying_key()
 
 miner1 = Miner(blockchain, public_key, sign_key)
+print(len(blockchain.blockchains[0]))
+print("mining")
+miner1.mine()
+print("done")
 
 sign_key = SigningKey.generate()
 public_key = sign_key.get_verifying_key()
 
 miner2 = Miner(blockchain, public_key, sign_key)
 
-# t1 = time.time()
-print("mining")
-block = miner1.mine(b'genesis block')
-print("done")
-miner1.transact(miner2.public_key, 105)
-miner1.transact(miner2.public_key, 30)
 
-print(blockchain.tx_pool)
+miner1.send_transaction(miner2.public_key, 10)
+miner1.send_transaction(miner2.public_key, 30)
+miner1.send_transaction(miner2.public_key, 30)
+
 
 print("mining")
-miner2.mine()
+miner2.mine(True)
 print("done")
 
 print(blockchain.blockchains)
 print(blockchain.tx_pool)
 print(blockchain.tids)
 print(blockchain.balance)
-
-# print(time.time()-t1)
-# print(blockchain.blockchains[0][0].transactions)
-# print(blockchain.balance)
-# print(blockchain.tids)
-# print(blockchain.tx_pool)
