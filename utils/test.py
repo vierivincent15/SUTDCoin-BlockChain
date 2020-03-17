@@ -30,6 +30,8 @@ print("mining")
 miner2.mine(True)
 print("done")
 
+print(blockchain)
+
 print(blockchain.blockchains)
 print(blockchain.tx_pool)
 print(blockchain.tids)

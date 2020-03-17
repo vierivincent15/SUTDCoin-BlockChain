@@ -171,6 +171,16 @@ class Blockchain:
     def get_prev_header(self, bc_idx, b_idx):
         return self.blockchains[bc_idx][b_idx].hash_header()
 
+    def __str__(self):
+        out = ""
+        for i in range(len(self.blockchains)):
+            chain = [str(block.hash_header()) for block in self.blockchains[i]]
+            out += "Chain" + str(i+1) + ": \n"
+            out += '\n'.join(chain)
+            out += '\n'
+
+        
+        return out
 
 # to test implementation
 if __name__ == "__main__":
