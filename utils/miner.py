@@ -30,6 +30,11 @@ class Miner:
         self.blockchain.add_transaction(Tx)
         return Tx
 
+    def add_transaction(self, transaction):
+        self.blockchain.add_transaction(transaction)
+
+    def get_transaction_proof(self, transaction):
+        self.blockchain.get_transaction_proof(transaction)
 
     def mine(self, debug_mode=False):
         global TARGET
@@ -47,7 +52,7 @@ class Miner:
                 except ValueError:
                     raise
 
-            if len(self.blockchain.tx_pool) < 3 and len(self.blockchain.blockchains[0]) > 0:
+            if len(self.blockchain.tx_pool) < 1 and len(self.blockchain.blockchains[0]) > 0:
                 if printhelper:
                     print("Waiting for more transactions...")   
                     printhelper = False             
