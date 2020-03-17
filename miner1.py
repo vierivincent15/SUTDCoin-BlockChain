@@ -5,7 +5,6 @@ from utils.blockchain import Blockchain
 from utils.transaction import Transaction
 from network_protocol import broadcast, get_public_key
 from ecdsa import SigningKey, VerifyingKey, BadSignatureError
-from multiprocessing import Process, Queue
 import requests
 
 app = Flask(__name__)
@@ -70,40 +69,29 @@ def send_transaction():
     receiver = request.form['receiver']
     amount = request.form['amount']
 
-    pub_key = get_public_key(clients[receiver])
-    tx = miner.send_transaction(pub_key, amount)
-    print(tx)
+    try:
+        pub_key = get_public_key(clients[receiver])
+        tx = miner.send_transaction(pub_key, amount)
+        json_data = tx.serialize()
+        broadcast(miners, json_data, '/recv_tx')
+        print("Broadcasting Transaction")
 
-    return Response(status=200)
-
-
-def mine_wrapper(queue, miner):
-    queue.put(miner.mine())
+        return Response(status=200)
+    except KeyError:
+        print("Not enough coins")
+        return Response(status=500)
 
 
 @app.route('/recv_tx', methods=['POST'])
 def receive_transaction():
-    global miner, job
+    global miner
     serialized_tx = request.form['block']
     tx = Transaction.deserialize(serialized_tx)
-    if (miner.blockchain.validate()):
-        miner.blockchain.add_transaction(tx)
-        print("added tx\n")
-
-        block = miner.mine()
-        print(block)
-        # multiprocessing
-        # queue = Queue()
-        # job = Process(target=mine_wrapper, args=(queue, miner))
-        # job = Process(target=miner.mine)
-        # job.start()
-        # block = queue.get()
-        # job.join()
-        # print(block)
-        # jobs = None
-
+    try:
+        miner.add_transaction(tx)
+        print("Added transaction\n")
         return Response(status=200)
-    else:
+    except ValueError:
         return Response(status=500)
 
 

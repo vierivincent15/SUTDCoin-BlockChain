@@ -50,9 +50,12 @@ if __name__ == "__main__":
         job.start()
 
     time.sleep(10)
+    print("Sending Transaction")
     for miner in miners.values():
         status = send_transaction(miner, 'client1', 50)
-    #status = send_transaction('client1', 'client2', 50)
+        if (status != 500):
+            break
+
     # print(status)
 
 

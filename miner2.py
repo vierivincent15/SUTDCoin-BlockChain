@@ -67,11 +67,17 @@ def send_transaction():
     receiver = request.form['receiver']
     amount = request.form['amount']
 
-    pub_key = get_public_key(clients[receiver])
-    tx = miner.send_transaction(pub_key, amount)
-    print(tx)
+    try:
+        pub_key = get_public_key(clients[receiver])
+        tx = miner.send_transaction(pub_key, amount)
+        json_data = tx.serialize()
+        broadcast(miners, json_data, '/recv_tx')
+        print("Broadcasting Transaction")
 
-    return Response(status=200)
+        return Response(status=200)
+    except KeyError:
+        print("Not enough coins")
+        return Response(status=500)
 
 
 @app.route('/recv_tx', methods=['POST'])
@@ -79,10 +85,11 @@ def receive_transaction():
     global miner
     serialized_tx = request.form['block']
     tx = Transaction.deserialize(serialized_tx)
-    if (miner.blockchain.validate()):
-        miner.blockchain.add_transaction(tx)
+    try:
+        miner.add_transaction(tx)
+        print("Added transaction\n")
         return Response(status=200)
-    else:
+    except ValueError:
         return Response(status=500)
 
 

@@ -89,7 +89,7 @@ class Blockchain:
         if transaction.validate() and (transaction.tid not in self.tids) and (transaction not in self.tx_pool):
             if transaction.sender is not None:
                 sender = transaction.sender.to_string().hex()
-                if self.balance[self.true_blockchain][sender] > transaction.amount:
+                if self.balance[self.true_blockchain][sender] > int(transaction.amount):
                     self.tx_pool.append(transaction)
                 else:
                     raise ValueError("Could Not Add Transaction")
@@ -118,12 +118,12 @@ class Blockchain:
             if transaction.sender is not None:
                 print(transaction.amount)
                 sender = transaction.sender.to_string().hex()
-                temp_dict[sender] -= transaction.amount
+                temp_dict[sender] -= int(transaction.amount)
             receiver = transaction.receiver.to_string().hex()
             if receiver not in temp_dict:
-                temp_dict[receiver] = transaction.amount
+                temp_dict[receiver] = int(transaction.amount)
             else:
-                temp_dict[receiver] += transaction.amount
+                temp_dict[receiver] += int(transaction.amount)
 
         return temp_dict
 
