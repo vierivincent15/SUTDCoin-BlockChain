@@ -27,12 +27,15 @@ miner1.send_transaction(miner2.public_key, 30)
 
 
 print("mining")
-miner2.mine(True)
+reward = miner2.mine()
 print("done")
 
-print(blockchain)
+# print(miner2.get_transaction_proof(reward))
+# print(miner2.deserialize_proof(miner2.get_transaction_proof(reward)))
 
-print(blockchain.blockchains)
-print(blockchain.tx_pool)
-print(blockchain.tids)
-print(blockchain.balance)
+# print(blockchain)
+
+# print(blockchain.blockchains)
+# print(blockchain.tx_pool)
+# print(blockchain.tids)
+# print(blockchain.balance)

@@ -116,7 +116,6 @@ class Blockchain:
         temp_dict = balance.copy()
         for transaction in block.transactions:
             if transaction.sender is not None:
-                print(transaction.amount)
                 sender = transaction.sender.to_string().hex()
                 temp_dict[sender] -= int(transaction.amount)
             receiver = transaction.receiver.to_string().hex()
