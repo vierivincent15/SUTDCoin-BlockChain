@@ -30,6 +30,12 @@ class Miner:
         self.blockchain.add_transaction(Tx)
         return Tx
 
+    def add_transaction(self, transaction):
+        self.blockchain.add_transaction(transaction)
+
+    def get_transaction_proof(self, transaction):
+        return self.blockchain.get_transaction_proof(transaction)
+
     def mine(self, debug_mode=False):
         global TARGET
         pow_val = TARGET

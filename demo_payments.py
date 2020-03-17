@@ -5,6 +5,7 @@ from utils.miner import Miner
 from ecdsa import SigningKey, VerifyingKey, BadSignatureError
 from multiprocessing import Process
 import requests
+import time
 
 miner_server = 'http://127.0.0.1:5000'
 clients = {
@@ -34,7 +35,7 @@ def start_mine(miner):
 
 def send_transaction(sender, receiver, amount):
     response = requests.post(
-        clients[sender]+'/send',
+        sender+'/send',
         data={
             'receiver': receiver,
             'amount': amount
@@ -48,7 +49,13 @@ if __name__ == "__main__":
         job = Process(target=start_mine, args=(miner, ))
         job.start()
 
-    #status = send_transaction('client1', 'client2', 50)
+    time.sleep(10)
+    print("Sending Transaction")
+    for miner in miners.values():
+        status = send_transaction(miner, 'client1', 50)
+        if (status != 500):
+            break
+
     # print(status)
 
 
