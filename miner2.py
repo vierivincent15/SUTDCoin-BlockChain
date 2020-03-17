@@ -27,12 +27,22 @@ def receive_genesis():
     global miner
     json_block = request.form['block']
     block = Block.deserialize(json_block)
-    print(block.header)
 
     miner.blockchain.add_block(block)
-    print(miner.blockchain.blockchains)
 
     return Response(status=201)
+
+
+@app.route('/recv_tx', methods=['POST'])
+def receive_transaction():
+    global miner
+    serialized_tx = request.form['block']
+    tx = Transaction.deserialize(serialized_tx)
+    if (miner.blockchain.validate()):
+        miner.blockchain.add_transaction(tx)
+        return Response(status=200)
+    else:
+        return Response(status=500)
 
 
 if __name__ == "__main__":

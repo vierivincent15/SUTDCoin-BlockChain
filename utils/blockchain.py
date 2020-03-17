@@ -145,6 +145,18 @@ class Blockchain:
         return temp_dict
 
     def resolve_fork(self):
+        if len(self.blockchains[0]) == 0:
+            return b'genesis block'
+        chain_length = [len(chain) for chain in self.blockchains]
+        max_index = chain_length.index(max(chain_length))
+
+        max_chain = self.blockchains[max_index]
+        self.true_blockchain = max_index
+
+        return max_chain[-1].hash_header()
+        
+
+    def resolve_fork_old(self):
         if len(self.blockchains) > 1:
             max_length = max([len(blockchain)
                               for blockchain in self.blockchains])
@@ -178,6 +190,16 @@ class Blockchain:
                 mt = MerkleTree(block.transactions)
                 return mt.get_proof(transaction)
 
+    def __str__(self):
+        out = ""
+        for i in range(len(self.blockchains)):
+            chain = [str(block.hash_header()) for block in self.blockchains[i]]
+            out += "Chain" + str(i+1) + ": \n"
+            out += '\n'.join(chain)
+            out += '\n'
+
+        
+        return out
 
 # to test implementation
 if __name__ == "__main__":
