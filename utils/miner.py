@@ -14,7 +14,7 @@ from ecdsa import SigningKey, VerifyingKey, BadSignatureError
 import time
 import uuid
 import json
-
+ 
  
 class Miner:
     def __init__(self, blockchain, public_key, sign_key):
@@ -45,13 +45,6 @@ class Miner:
                                   for proof in proof_with_root[0][1]]
         serialization['root'] = proof_with_root[1].hex()
         return json.dumps(serialization)
-
-    def deserialize_proof(self, serialization):
-        serialization = json.loads(serialization)
-        proof_idx = serialization['proof_idx']
-        proof = [bytes.fromhex(proof) for proof in serialization['proof']]
-        root = bytes.fromhex(serialization['root'])
-        return ([proof_idx, proof], root)
 
     def mine(self, debug_mode=False):
         global TARGET

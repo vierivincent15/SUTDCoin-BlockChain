@@ -4,8 +4,11 @@ import requests
 
 app = Flask(__name__)
 miners = ['http://127.0.0.1:5011', 'http://127.0.0.1:5012']
+clients = {
+    'client1': 'http://127.0.0.1:5001'
+    }
 
-client = SPVClient.new('2', 0)
+client = SPVClient.new('2')
 print("Client Initialized")
 print(f"Balance: {client.balance}\n")
 
@@ -34,16 +37,6 @@ def create_transaction():
     print(amount)
     #UTXO = client.send_transaction()
     return Response(status=200)
-
-
-@app.route('/test')
-def test():
-    response = requests.post(
-        miner_server+'/add',
-        data={'miner': 'miner1'}
-    )
-    print(response)
-    return "k"
 
 
 if __name__ == "__main__":

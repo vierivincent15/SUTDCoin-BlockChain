@@ -1,5 +1,6 @@
 from flask import Flask, Response, render_template, request, redirect
 from utils.spvclient import SPVClient
+from utils.transaction import Transaction
 from network_protocol import broadcast, get_public_key
 import requests
 import time
@@ -47,9 +48,21 @@ def create_transaction():
 
 @app.route('/recv_proof', methods=['POST'])
 def receive_proof():
+    global client
+
+    serialized_tx = request.form['transaction']
+    tx = Transaction.deserialize(serialized_tx)
     serialized_proof = request.form['proof']
-    print(serialized_proof)
-    return Response(status=200)
+    # ([proof_idx, proof], root)
+    proof, root = client.deserialize_proof(serialized_proof)
+
+    if(client.validate_transaction(tx, proof, root)):
+        print("Proof valid")
+        client.balance += tx.amount
+        return Response(status=200)
+    else:
+        print("Proof BAAAAAAAAAAAAAAD")
+        return Response(status=406)
 
 
 if __name__ == "__main__":

@@ -73,7 +73,7 @@ def receive_block():
 
 @app.route('/send', methods=['POST'])
 def send_transaction():
-    global miner, clients, pending_tx
+    global miner, clients, pending_tx, blockchain
     receiver = request.form['receiver']
     amount = request.form['amount']
 
@@ -81,17 +81,23 @@ def send_transaction():
         pub_key = get_public_key(clients[receiver])
         tx = miner.send_transaction(pub_key, amount)
         pending_tx[tx.tid] = None
-        json_data = tx.serialize()
-        broadcast(miners, json_data, '/recv_tx')
+        serialized_tx = tx.serialize()
+        broadcast(miners, serialized_tx, '/recv_tx')
         print("Broadcasting Transaction")
 
         while (pending_tx[tx.tid] == None):
             time.sleep(1)
-        print(f"Got proof: {pending_tx[tx.tid]}")
-        send_proof(clients[receiver], pending_tx[tx.tid])
+        print("Got proof. Sending proof...")
+        status = send_proof(clients[receiver], serialized_tx, pending_tx[tx.tid])
 
         del (pending_tx[tx.tid])
-        return Response(status=200)
+        if(status == 200):
+            print("Proof validated")
+            return Response(status=200)
+        else:
+            print("Proof BAAAAAAAAAAAAAAD")
+            return Response(status=406)
+        
     except KeyError:
         print("Not enough coins")
         return Response(status=500)

@@ -14,11 +14,15 @@ def get_public_key(receiver):
     pub_key = VerifyingKey.from_string(response.content, curve=NIST192p)
     return pub_key
 
-def send_proof(receiver, serialized_proof):
+def send_proof(receiver, json_tx, serialized_proof):
     response = requests.post(
         receiver+'/recv_proof',
-        data={'proof': serialized_proof}
+        data={
+            'transaction': json_tx,
+            'proof': serialized_proof
+            }
     )
+    return response.status_code
 
 if __name__ == "__main__":
     pass

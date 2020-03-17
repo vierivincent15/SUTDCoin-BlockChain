@@ -53,17 +53,12 @@ if __name__ == "__main__":
     print("Sending Transaction")
     for miner in miners.values():
         status = send_transaction(miner, 'client1', 50)
-        if (status != 500):
+        if (status == 200):
             break
 
-    # print(status)
+    if (status == 200):
+        print("Transaction was successful")
+    else:
+        print("Transaction was unsuccessful :(((")
 
 
-# response = requests.post(
-#     client1+'/create',
-#     data={}
-# )
-# if(response.status_code == 201):
-#     print("Client 1 created")
-# else:
-#     print("Client 1 already created")

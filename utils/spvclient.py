@@ -11,6 +11,7 @@ except:
 from ecdsa import SigningKey
 import hashlib
 import time
+import json
 
 
 class SPVClient(object):
@@ -27,9 +28,6 @@ class SPVClient(object):
         newClient.headers = [[]]
         return newClient
 
-    def receive_block_header(self, blockchain):
-        for key, value in blockchain.blockchains.items():
-            self.block_headers.append(value.to_json())
 
     def send_transaction(self, receiver, amount, comment="COOL!"):
         # TODO: check balance
@@ -74,6 +72,13 @@ class SPVClient(object):
 
         return max_index
 
+    def deserialize_proof(self, serialization):
+        serialization = json.loads(serialization)
+        proof_idx = serialization['proof_idx']
+        proof = [bytes.fromhex(proof) for proof in serialization['proof']]
+        root = bytes.fromhex(serialization['root'])
+        return ([proof_idx, proof], root)
+
     def validate_transaction(self, transaction, proof, tree_root):
         longest_idx = self.identify_longest_header()
         merkle_roots = [header["tree_root"] for header in self.headers[longest_idx]]
@@ -109,10 +114,6 @@ if __name__ == "__main__":
     blockchain = Blockchain()
     # for b in blocks:
     #     blockchain.add_block(b)
-
-    # # Able to receive block headers (not full blocks)
-    # # client1.receive_block_header(blockchain)
-    # # print(client1.block_headers)
 
     # # Able to receive transactions (with their presence proofs) and verify them
     # # Able to send transactions
