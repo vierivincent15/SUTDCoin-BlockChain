@@ -1,10 +1,12 @@
 try:
     from transaction import Transaction
     from block import Block
+    from merkletree import MerkleTree
     from config import TARGET
 except:
     from utils.transaction import Transaction
     from utils.block import Block
+    from utils.merkletree import MerkleTree
     from utils.config import TARGET
 from json import dumps, loads
 import hashlib
@@ -16,6 +18,7 @@ class Blockchain:
 
     def __init__(self):
         self.blockchains = [[]]
+        self.true_blockchain = 0
         self.tx_pool = []
         self.tids = set()
         self.balance = [{}]
@@ -84,7 +87,16 @@ class Blockchain:
 
     def add_transaction(self, transaction):
         if transaction.validate() and (transaction.tid not in self.tids) and (transaction not in self.tx_pool):
-            self.tx_pool.append(transaction)
+            if transaction.sender is not None:
+                sender = transaction.sender.to_string().hex()
+                if self.balance[self.true_blockchain][sender] > transaction.amount:
+                    self.tx_pool.append(transaction)
+                else:
+                    raise ValueError("Could Not Add Transaction")
+            else:
+                self.tx_pool.append(transaction)
+        else:
+            raise ValueError("Could Not Add Transaction")
 
     # to add in to add block later
     def remove_transaction(self, block):
@@ -140,6 +152,7 @@ class Blockchain:
         max_index = chain_length.index(max(chain_length))
 
         max_chain = self.blockchains[max_index]
+        self.true_blockchain = max_index
 
         return max_chain[-1].hash_header()
 
@@ -170,6 +183,12 @@ class Blockchain:
 
     def get_prev_header(self, bc_idx, b_idx):
         return self.blockchains[bc_idx][b_idx].hash_header()
+
+    def get_transaction_proof(self, transaction):
+        for block in self.blockchains[self.true_blockchain]:
+            if transaction in block.transactions:
+                mt = MerkleTree(block.transactions)
+                return mt.get_proof(transaction)
 
     def __str__(self):
         out = ""
