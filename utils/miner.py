@@ -30,11 +30,11 @@ class Miner:
         self.blockchain.add_transaction(Tx)
         return Tx
 
-
     def mine(self, debug_mode=False):
         global TARGET
         pow_val = TARGET
-        reward = Transaction.new(None, self.public_key, self.reward, "Reward", None)
+        reward = Transaction.new(
+            None, self.public_key, self.reward, "Reward", None)
         t1 = time.time()
         printhelper = True
 
@@ -47,19 +47,17 @@ class Miner:
                 except ValueError:
                     raise
 
-            if len(self.blockchain.tx_pool) < 3 and len(self.blockchain.blockchains[0]) > 0:
+            if len(self.blockchain.tx_pool) < 1 and len(self.blockchain.blockchains[0]) > 0:
                 if printhelper:
-                    print("Waiting for more transactions...")   
-                    printhelper = False             
+                    print("Waiting for more transactions...")
+                    printhelper = False
                 continue
-            
-            
+
             prev_header = self.blockchain.resolve_fork()
             transactions = self.blockchain.tx_pool.copy()
             transactions.insert(0, reward)
             block = Block.new(transactions, prev_header)
             pow_val = block.hash_header()
-
 
     def mine_malicious(self, prev_header=None, bc_idx=0, b_idx=-1):
         global TARGET
@@ -91,6 +89,7 @@ class Miner:
             return block
         except ValueError:
             raise
+
 
 # to test implementation
 if __name__ == "__main__":

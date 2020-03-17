@@ -3,37 +3,34 @@ from utils.blockchain import Blockchain
 from utils.transaction import Transaction
 from utils.miner import Miner
 from ecdsa import SigningKey, VerifyingKey, BadSignatureError
+from multiprocessing import Process
 import requests
 
 miner_server = 'http://127.0.0.1:5000'
 clients = {
     'client1': 'http://127.0.0.1:5001',
     'client2': 'http://127.0.0.1:5002'
-    }
+}
 miners = {
     'miner1': 'http://127.0.0.1:5011',
     'miner2': 'http://127.0.0.1:5012'
-    }
+}
 
-def setup_genesis_block():
+
+def start_mine(miner):
     response = requests.post(
-        miners['miner1']+'/init',
+        miners[miner]+'/init',
         data={}
     )
-    if(response.status_code == 201):
-        json_block = response.content
-        block = Block.deserialize(json_block)
-        print(block.header)
-    else:
-        print("Error")
 
-    response = requests.post(
-        miners['miner1']+'/send',
-        data={
-            'receiver': 'miner2',
-            'amount': 100
-        }
-    )
+    # response = requests.post(
+    #     miners['miner1']+'/send',
+    #     data={
+    #         'receiver': 'client1',
+    #         'amount': 100
+    #     }
+    # )
+
 
 def send_transaction(sender, receiver, amount):
     response = requests.post(
@@ -45,11 +42,14 @@ def send_transaction(sender, receiver, amount):
     )
     return response.status_code
 
-if __name__ == "__main__":
-    # setup_genesis_block()
 
-    status = send_transaction('client1', 'client2', 50)
-    print(status)
+if __name__ == "__main__":
+    for miner in miners.keys():
+        job = Process(target=start_mine, args=(miner))
+        job.start()
+
+    #status = send_transaction('client1', 'client2', 50)
+    # print(status)
 
 
 # response = requests.post(

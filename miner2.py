@@ -3,11 +3,12 @@ from utils.miner import Miner
 from utils.block import Block
 from utils.blockchain import Blockchain
 from utils.transaction import Transaction
+from network_protocol import broadcast
 from ecdsa import SigningKey, VerifyingKey, BadSignatureError
 import requests
 
 app = Flask(__name__)
-miners = []
+miners = ['http://127.0.0.1:5011']
 
 blockchain = Blockchain()
 sign_key = SigningKey.generate()
@@ -23,14 +24,26 @@ def index():
 
 
 @app.route('/init', methods=['POST'])
-def receive_genesis():
-    global miner
-    json_block = request.form['block']
-    block = Block.deserialize(json_block)
+def start_mine():
+    global miners, miner
 
-    miner.blockchain.add_block(block)
+    while True:
+        print("Mining")
+        block = miner.mine()
+        if (block):
+            json_data = block.serialize()
+            broadcast(miners, json_data, '/recv_block')
 
     return Response(status=201)
+
+
+@app.route('/recv_block', methods=['POST'])
+def receive_block():
+    global miner
+
+    json_block = request.form['block']
+    block = Block.deserialize(json_block)
+    blockchain.add_block(block)
 
 
 @app.route('/recv_tx', methods=['POST'])

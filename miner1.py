@@ -33,19 +33,26 @@ def index():
 
 
 @app.route('/init', methods=['POST'])
-def mine_genesis():
-    global miners
+def start_mine():
+    global miners, miner
+
+    while True:
+        block = miner.mine()
+        if (block):
+            json_data = block.serialize()
+            broadcast(miners, json_data, '/recv_block')
+
+    # response = Response(response=json_data, status=201)
+    return Response(status=200)
+
+
+@app.route('/recv_block', methods=['POST'])
+def receive_block():
     global miner
 
-    block, status = miner.mine(b'genesis block')
-    json_data = block.serialize()
-    print(block.header)
-    print(miner.blockchain.blockchains)
-
-    response = Response(response=json_data, status=201)
-    broadcast(miners, json_data, '/init')
-
-    return response
+    json_block = request.form['block']
+    block = Block.deserialize(json_block)
+    blockchain.add_block(block)
 
 
 @app.route('/send', methods=['POST'])
@@ -61,6 +68,7 @@ def send_transaction():
 def mine_wrapper(queue, miner):
     queue.put(miner.mine())
 
+
 @app.route('/recv_tx', methods=['POST'])
 def receive_transaction():
     global miner, job
@@ -68,6 +76,7 @@ def receive_transaction():
     tx = Transaction.deserialize(serialized_tx)
     if (miner.blockchain.validate()):
         miner.blockchain.add_transaction(tx)
+        print("added tx\n")
 
         block = miner.mine()
         print(block)
@@ -92,8 +101,9 @@ def stall():
     job = Process(target=t)
     job.start()
     job.join()
-    
+
     return Response(status=200)
+
 
 @app.route('/test', methods=['GET'])
 def stop():
@@ -101,9 +111,11 @@ def stop():
     job.terminate()
     return Response(status=200)
 
+
 def t():
     while True:
         pass
+
 
 if __name__ == "__main__":
     ip = ""
