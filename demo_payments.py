@@ -45,7 +45,7 @@ def send_transaction(sender, receiver, amount):
 
 if __name__ == "__main__":
     for miner in miners.keys():
-        job = Process(target=start_mine, args=(miner))
+        job = Process(target=start_mine, args=(miner, ))
         job.start()
 
     #status = send_transaction('client1', 'client2', 50)

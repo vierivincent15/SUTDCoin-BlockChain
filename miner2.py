@@ -34,16 +34,18 @@ def start_mine():
             json_data = block.serialize()
             broadcast(miners, json_data, '/recv_block')
 
-    return Response(status=201)
+    return Response(status=200)
 
 
 @app.route('/recv_block', methods=['POST'])
 def receive_block():
-    global miner
+    global miner, blockchain
 
     json_block = request.form['block']
     block = Block.deserialize(json_block)
     blockchain.add_block(block)
+
+    return Response(status=200)
 
 
 @app.route('/recv_tx', methods=['POST'])
