@@ -14,14 +14,14 @@ import time
 class SPVClient(object):
 
     @classmethod
-    def new(cls, client_id=''):
+    def new(cls, client_id='', balance=0):
         newClient = cls()
         # Associated key pairs
         newClient.private_key = SigningKey.generate()
         newClient.public_key = newClient.private_key.get_verifying_key()
         newClient.block_headers = []
         newClient.id = client_id
-        newClient.balance = 0
+        newClient.balance = balance
         return newClient
 
     def receive_block_header(self, blockchain):
@@ -30,8 +30,9 @@ class SPVClient(object):
 
     def send_transaction(self, receiver, amount, comment="COOL!"):
         # TODO: check balance
-        UTXO = Transaction.new(self.public_key, receiver, amount, comment, self.private_key)
-        self.balance -= amount
+        # self.balance -= amount
+        UTXO = Transaction.new(self.public_key, receiver,
+                               amount, comment, self.private_key)
         return UTXO
 
     def receive_transaction(self, transaction):

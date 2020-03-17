@@ -1,16 +1,10 @@
 from flask import Flask, Response, render_template, request, redirect
 from utils.spvclient import SPVClient
-from network_protocol import broadcast, get_public_key
 import requests
-import time
 
 app = Flask(__name__)
 miners = ['http://127.0.0.1:5011', 'http://127.0.0.1:5012']
-clients = {
-    'client2': 'http://127.0.0.1:5002'
-    }
-
-client = SPVClient.new('1', 100)
+client = SPVClient.new('2', 100)
 
 
 @app.route('/')
@@ -30,16 +24,12 @@ def get_pub_key():
 
 @app.route('/send', methods=['POST'])
 def create_transaction():
-    global clients, client
-
+    global client
     receiver = request.form['receiver']
-    amount = int(request.form['amount'])
-    
-    pub_key = get_public_key(clients[receiver])
-    UTXO = client.send_transaction(pub_key, amount)
-    broadcast(miners, UTXO.serialize(), '/recv_tx')
-
-    time.sleep(5)
+    amount = request.form['amount']
+    print(receiver)
+    print(amount)
+    #UTXO = client.send_transaction()
     return Response(status=200)
 
 
@@ -57,4 +47,4 @@ if __name__ == "__main__":
     ip = ""
     if (ip == ""):
         ip = "localhost"
-    app.run(host=ip, port=5001, debug=True)
+    app.run(host=ip, port=5002, debug=True)

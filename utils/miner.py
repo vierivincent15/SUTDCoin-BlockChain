@@ -64,11 +64,12 @@ class Miner:
     def mine_malicious(self, prev_header=None, bc_idx=0, b_idx=-1):
         global TARGET
         pow_val = TARGET
-        
+
         if prev_header is None:
             if bc_idx < len(self.blockchain.blockchains):
                 if b_idx < len(self.blockchain.blockchains[bc_idx]):
-                    prev_header = self.blockchain.get_prev_header(bc_idx, b_idx)
+                    prev_header = self.blockchain.get_prev_header(
+                        bc_idx, b_idx)
                 else:
                     raise IndexError
             else:
