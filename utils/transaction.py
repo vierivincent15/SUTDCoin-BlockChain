@@ -3,8 +3,9 @@ from ecdsa import SigningKey, VerifyingKey, BadSignatureError
 import json
 import uuid
 
+
 class Transaction:
-    
+
     def __init__(self, tid=None, sender=None, receiver=None, amount=None, comment=None, signature=None):
         if tid is None:
             self.tid = uuid.uuid4().hex
@@ -15,11 +16,12 @@ class Transaction:
         self.amount = amount
         self.comment = comment
         self.signature = signature
-        
+
     @classmethod
     def new(cls, sender, receiver, amount, comment, sign_key):
         # Instantiates object from passed values
-        Tx = cls(sender=sender, receiver=receiver, amount=amount, comment=comment)
+        Tx = cls(sender=sender, receiver=receiver,
+                 amount=amount, comment=comment)
         if sender is not None:
             Tx.sign(sign_key)
         return Tx
@@ -27,7 +29,7 @@ class Transaction:
     def serialize(self, sign_mode=True):
         # Serializes object to CBOR or JSON string
         data = {
-            'tid' : self.tid,
+            'tid': self.tid,
             'sender': self.sender.to_string().hex() if self.sender is not None else self.sender,
             'receiver': self.receiver.to_string().hex(),
             'amount': self.amount,
@@ -36,7 +38,6 @@ class Transaction:
         if sign_mode and not self.sender is None:
             data['signature'] = self.signature.hex()
         return json.dumps(data)
-        
 
     @classmethod
     def deserialize(cls, json_string):
@@ -52,7 +53,7 @@ class Transaction:
         amount = data['amount']
         comment = data['comment']
 
-        return cls(tid,sender,receiver,amount,comment,signature if data['sender'] is not None else None)
+        return cls(tid, sender, receiver, amount, comment, signature if data['sender'] is not None else None)
 
     def sign(self, sign_key):
         # Sign object with private key passed
@@ -72,6 +73,7 @@ class Transaction:
         # Check whether transactions are the same
         return self.serialize(False) == other.serialize(False)
 
+
 # to test implementation
 if __name__ == "__main__":
     amount = 1000
@@ -79,15 +81,15 @@ if __name__ == "__main__":
 
     sign_key_1 = SigningKey.generate()
     sender = sign_key_1.get_verifying_key()
-    
+
     sign_key_2 = SigningKey.generate()
     receiver = sign_key_2.get_verifying_key()
-    
+
     Tx = Transaction.new(None, receiver, amount, comment, sign_key_1)
 
     a = Tx.serialize()
     b = Transaction.deserialize(a)
 
-    print (Tx == b)
+    print(Tx == b)
     print(Tx.tid)
     print(b.tid)

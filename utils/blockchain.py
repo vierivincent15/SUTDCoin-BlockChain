@@ -116,6 +116,7 @@ class Blockchain:
         temp_dict = balance.copy()
         for transaction in block.transactions:
             if transaction.sender is not None:
+                print(transaction.amount)
                 sender = transaction.sender.to_string().hex()
                 temp_dict[sender] -= transaction.amount
             receiver = transaction.receiver.to_string().hex()
@@ -154,7 +155,6 @@ class Blockchain:
         self.true_blockchain = max_index
 
         return max_chain[-1].hash_header()
-        
 
     def resolve_fork_old(self):
         if len(self.blockchains) > 1:
@@ -198,8 +198,8 @@ class Blockchain:
             out += '\n'.join(chain)
             out += '\n'
 
-        
         return out
+
 
 # to test implementation
 if __name__ == "__main__":
