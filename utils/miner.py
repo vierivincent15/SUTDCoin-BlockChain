@@ -15,6 +15,7 @@ import time
 import uuid
 import json
 
+ 
 class Miner:
     def __init__(self, blockchain, public_key, sign_key):
         self.id = uuid.uuid4().hex
@@ -36,11 +37,12 @@ class Miner:
     def get_transaction_proof(self, transaction):
         proof_with_root = self.blockchain.get_transaction_proof(transaction)
         return self.serialize_proof(proof_with_root)
-    
+
     def serialize_proof(self, proof_with_root):
         serialization = {}
         serialization['proof_idx'] = proof_with_root[0][0]
-        serialization['proof'] = [proof.hex() for proof in proof_with_root[0][1]]
+        serialization['proof'] = [proof.hex()
+                                  for proof in proof_with_root[0][1]]
         serialization['root'] = proof_with_root[1].hex()
         return json.dumps(serialization)
 

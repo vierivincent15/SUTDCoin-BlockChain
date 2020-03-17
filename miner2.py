@@ -6,6 +6,7 @@ from utils.transaction import Transaction
 from network_protocol import broadcast, get_public_key
 from ecdsa import SigningKey, VerifyingKey, BadSignatureError
 import requests
+import time
 
 app = Flask(__name__)
 miners = ['http://127.0.0.1:5011']
@@ -18,6 +19,7 @@ blockchain = Blockchain()
 sign_key = SigningKey.generate()
 public_key = sign_key.get_verifying_key()
 miner = Miner(blockchain, public_key, sign_key)
+pending_tx = {}
 
 
 @app.route('/')
@@ -46,33 +48,45 @@ def start_mine():
         if (block):
             json_data = block.serialize()
             broadcast(miners, json_data, '/recv_block')
+            for tx in block.transactions:
+                if (tx.tid in pending_tx):
+                    pending_tx[tx.tid] = miner.get_transaction_proof(tx)
 
     return Response(status=200)
 
 
 @app.route('/recv_block', methods=['POST'])
 def receive_block():
-    global miner, blockchain
+    global miner, blockchain, pending_tx
 
     json_block = request.form['block']
     block = Block.deserialize(json_block)
     blockchain.add_block(block)
+    for tx in block.transactions:
+        if (tx.tid in pending_tx):
+            pending_tx[tx.tid] = miner.get_transaction_proof(tx)
 
     return Response(status=200)
 
 
 @app.route('/send', methods=['POST'])
 def send_transaction():
-    global miner, clients
+    global miner, clients, pending_tx
     receiver = request.form['receiver']
     amount = request.form['amount']
 
     try:
         pub_key = get_public_key(clients[receiver])
         tx = miner.send_transaction(pub_key, amount)
+        pending_tx[tx.tid] = None
         json_data = tx.serialize()
         broadcast(miners, json_data, '/recv_tx')
         print("Broadcasting Transaction")
+
+        while (pending_tx[tx.tid] == None):
+            time.sleep(1)
+        print(f"Proof: {pending_tx[tx.tid]}")
+        del (pending_tx[tx.tid])
 
         return Response(status=200)
     except KeyError:
