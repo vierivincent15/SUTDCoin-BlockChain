@@ -12,23 +12,24 @@ public_key = sign_key.get_verifying_key()
 miner1 = Miner(blockchain, public_key, sign_key)
 print(len(blockchain.blockchains[0]))
 print("mining")
-miner1.mine()
+block = miner1.mine()
 print("done")
 
-sign_key = SigningKey.generate()
-public_key = sign_key.get_verifying_key()
 
-miner2 = Miner(blockchain, public_key, sign_key)
+# sign_key = SigningKey.generate()
+# public_key = sign_key.get_verifying_key()
 
-
-miner1.send_transaction(miner2.public_key, 10)
-miner1.send_transaction(miner2.public_key, 30)
-miner1.send_transaction(miner2.public_key, 30)
+# miner2 = Miner(blockchain, public_key, sign_key)
 
 
-print("mining")
-reward = miner2.mine()
-print("done")
+# miner1.send_transaction(miner2.public_key, 10)
+# miner1.send_transaction(miner2.public_key, 30)
+# miner1.send_transaction(miner2.public_key, 30)
+
+
+# print("mining")
+# reward = miner2.mine()
+# print("done")
 
 # print(miner2.get_transaction_proof(reward))
 # print(miner2.deserialize_proof(miner2.get_transaction_proof(reward)))

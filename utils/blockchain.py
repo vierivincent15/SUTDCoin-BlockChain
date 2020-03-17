@@ -22,8 +22,9 @@ class Blockchain:
         self.tx_pool = []
         self.tids = set()
         self.balance = [{}]
+        self.true_prev_header = b'genesis block'
 
-    def add_block(self, block):
+    def add_block(self, block, resolve=True):
         idxs = self.trace_prev_header(block.header["prev_header"])
         if self.validate_block(block, idxs):
             bc_idx, b_idx = 0, 0
@@ -45,6 +46,9 @@ class Blockchain:
                 new_balance = self.aggregate_balance(bc_idx, b_idx)
                 new_balance = self.update_balance(new_balance, block)
                 self.balance[bc_idx] = new_balance
+            
+            if resolve:
+                self.resolve_fork()
         else:
             raise ValueError("Could Not Add Block")
 
@@ -151,9 +155,9 @@ class Blockchain:
         max_index = chain_length.index(max(chain_length))
 
         max_chain = self.blockchains[max_index]
+        
         self.true_blockchain = max_index
-
-        return max_chain[-1].hash_header()
+        self.true_prev_header =  max_chain[-1].hash_header()
 
     def resolve_fork_old(self):
         if len(self.blockchains) > 1:

@@ -65,7 +65,7 @@ class Miner:
                 try:
                     self.blockchain.add_block(block)
                     print(time.time()-t1)
-                    return reward
+                    return block
                 except ValueError:
                     raise
 
@@ -75,7 +75,7 @@ class Miner:
                     printhelper = False
                 continue
 
-            prev_header = self.blockchain.resolve_fork()
+            prev_header = self.blockchain.true_prev_header
             transactions = self.blockchain.tx_pool.copy()
             transactions.insert(0, reward)
             block = Block.new(transactions, prev_header)
