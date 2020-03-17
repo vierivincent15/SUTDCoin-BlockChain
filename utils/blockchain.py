@@ -59,10 +59,8 @@ class Blockchain:
             return False
 
         # Check if the hash of the header is less than the assigned target
-        header = block.serialize(True)
-        hasher = hashlib.sha256()
-        hasher.update(header.encode())
-        if not hasher.digest() < TARGET:
+        header_hash = block.hash_header()
+        if not header_hash < TARGET:
             return False
 
         # check genesis block then don't need to check for prev header
@@ -155,7 +153,7 @@ class Blockchain:
         max_index = chain_length.index(max(chain_length))
 
         max_chain = self.blockchains[max_index]
-        
+
         self.true_blockchain = max_index
         self.true_prev_header =  max_chain[-1].hash_header()
 

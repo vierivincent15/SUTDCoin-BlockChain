@@ -46,10 +46,9 @@ class Block:
         return hashlib.sha256(self.serialize(True).encode()).digest()
 
     @classmethod
-    def deserialize(cls, json_string):
+    def deserialize(cls, json_string, header_mode=False):
         data = json.loads(json_string)
-        transactions = [Transaction.deserialize(
-            transaction) for transaction in data['transactions']]
+
         header = data['header']
         header = {
             'prev_header': bytes.fromhex(header['prev_header']),
@@ -57,6 +56,13 @@ class Block:
             'timestamp': header['timestamp'],
             'nonce': header['nonce']
         }
+
+        if header_mode:
+            return header
+
+        transactions = [Transaction.deserialize(
+            transaction) for transaction in data['transactions']]
+        
         return cls(transactions, None, header)
 
     def validate(self):
