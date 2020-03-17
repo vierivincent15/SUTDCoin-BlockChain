@@ -4,7 +4,10 @@ import requests
 
 app = Flask(__name__)
 miners = ['http://127.0.0.1:5011', 'http://127.0.0.1:5012']
-client = SPVClient.new('2', 100)
+
+client = SPVClient.new('2', 0)
+print("Client Initialized")
+print(f"Balance: {client.balance}\n")
 
 
 @app.route('/')

@@ -10,7 +10,9 @@ clients = {
     'client2': 'http://127.0.0.1:5002'
     }
 
-client = SPVClient.new('1', 100)
+client = SPVClient.new('1')
+print("Client Initialized")
+print(f"Balance: {client.balance}\n")
 
 
 @app.route('/')
@@ -43,14 +45,11 @@ def create_transaction():
     return Response(status=200)
 
 
-@app.route('/test')
-def test():
-    response = requests.post(
-        miner_server+'/add',
-        data={'miner': 'miner1'}
-    )
-    print(response)
-    return "k"
+@app.route('/recv_proof', methods=['POST'])
+def receive_proof():
+    serialized_proof = request.form['proof']
+    print(serialized_proof)
+    return Response(status=200)
 
 
 if __name__ == "__main__":

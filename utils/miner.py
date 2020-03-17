@@ -29,7 +29,7 @@ class Miner:
         Tx = Transaction.new(self.public_key, receiver,
                              amount, comment, self.sign_key)
         self.blockchain.add_transaction(Tx)
-        return Tx
+        return Tx 
 
     def add_transaction(self, transaction):
         self.blockchain.add_transaction(transaction)

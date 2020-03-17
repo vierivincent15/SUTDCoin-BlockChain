@@ -3,7 +3,7 @@ from utils.miner import Miner
 from utils.block import Block
 from utils.blockchain import Blockchain
 from utils.transaction import Transaction
-from network_protocol import broadcast, get_public_key
+from network_protocol import broadcast, get_public_key, send_proof
 from ecdsa import SigningKey, VerifyingKey, BadSignatureError
 import requests
 import time
@@ -85,9 +85,10 @@ def send_transaction():
 
         while (pending_tx[tx.tid] == None):
             time.sleep(1)
-        print(f"Proof: {pending_tx[tx.tid]}")
-        del (pending_tx[tx.tid])
+        print(f"Got proof: {pending_tx[tx.tid]}")
+        send_proof(clients[receiver], pending_tx[tx.tid])
 
+        del (pending_tx[tx.tid])
         return Response(status=200)
     except KeyError:
         print("Not enough coins")
