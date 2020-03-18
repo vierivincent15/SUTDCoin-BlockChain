@@ -3,7 +3,7 @@ from utils.miner import Miner
 from utils.block import Block
 from utils.blockchain import Blockchain
 from utils.transaction import Transaction
-from network_protocol import broadcast, get_public_key, send_proof
+from network_protocol import broadcast, broadcast_client, get_public_key, send_proof
 from ecdsa import SigningKey, VerifyingKey, BadSignatureError
 import requests
 import time
@@ -48,6 +48,7 @@ def start_mine():
         if (block):
             json_data = block.serialize()
             broadcast(miners, json_data, '/recv_block')
+            broadcast_client(clients, block.serialize(True), '/recv_header')
             for tx in block.transactions:
                 if (tx.tid in pending_tx):
                     pending_tx[tx.tid] = miner.get_transaction_proof(tx)
@@ -86,7 +87,8 @@ def send_transaction():
         while (pending_tx[tx.tid] == None):
             time.sleep(1)
         print("Got proof. Sending proof...")
-        status = send_proof(clients[receiver], serialized_tx, pending_tx[tx.tid])
+        status = send_proof(clients[receiver],
+                            serialized_tx, pending_tx[tx.tid])
 
         del (pending_tx[tx.tid])
         if(status == 200):

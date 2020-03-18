@@ -14,8 +14,8 @@ from ecdsa import SigningKey, VerifyingKey, BadSignatureError
 import time
 import uuid
 import json
- 
- 
+
+
 class Miner:
     def __init__(self, blockchain, public_key, sign_key):
         self.id = uuid.uuid4().hex
@@ -29,7 +29,7 @@ class Miner:
         Tx = Transaction.new(self.public_key, receiver,
                              amount, comment, self.sign_key)
         self.blockchain.add_transaction(Tx)
-        return Tx 
+        return Tx
 
     def add_transaction(self, transaction):
         self.blockchain.add_transaction(transaction)

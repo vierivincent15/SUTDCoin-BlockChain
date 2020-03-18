@@ -1,4 +1,5 @@
 from flask import Flask, Response, render_template, request, redirect
+from utils.block import Block
 from utils.spvclient import SPVClient
 from utils.transaction import Transaction
 from network_protocol import broadcast, get_public_key
@@ -9,7 +10,7 @@ app = Flask(__name__)
 miners = ['http://127.0.0.1:5011', 'http://127.0.0.1:5012']
 clients = {
     'client2': 'http://127.0.0.1:5002'
-    }
+}
 
 client = SPVClient.new('1')
 print("Client Initialized")
@@ -37,12 +38,23 @@ def create_transaction():
 
     receiver = request.form['receiver']
     amount = int(request.form['amount'])
-    
+
     pub_key = get_public_key(clients[receiver])
     UTXO = client.send_transaction(pub_key, amount)
     broadcast(miners, UTXO.serialize(), '/recv_tx')
 
     time.sleep(5)
+    return Response(status=200)
+
+
+@app.route('/recv_header', methods=['POST'])
+def receive_header():
+    global client
+
+    serialized_header = request.form['header']
+    header = Block.deserialize(serialized_header, True)
+
+    client.add_header(header)
     return Response(status=200)
 
 
@@ -58,7 +70,7 @@ def receive_proof():
 
     if(client.validate_transaction(tx, proof, root)):
         print("Proof valid")
-        client.balance += tx.amount
+        client.balance += int(tx.amount)
         return Response(status=200)
     else:
         print("Proof BAAAAAAAAAAAAAAD")

@@ -60,5 +60,3 @@ if __name__ == "__main__":
         print("Transaction was successful")
     else:
         print("Transaction was unsuccessful :(((")
-
-
