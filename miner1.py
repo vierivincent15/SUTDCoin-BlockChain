@@ -118,26 +118,16 @@ def receive_transaction():
         return Response(status=500)
 
 
-@app.route('/stall', methods=['POST'])
-def stall():
-    global job
-    job = Process(target=t)
-    job.start()
-    job.join()
+@app.route('/req_proof', methods=['POST'])
+def get_proof():
+    global miner
+    serialized_tx = request.form['transaction']
+    tx = Transaction.deserialize(serialized_tx)
+    proof = miner.get_transaction_proof(tx)
 
-    return Response(status=200)
+    response = Response(response=proof, status=200)
 
-
-@app.route('/test', methods=['GET'])
-def stop():
-    global job
-    job.terminate()
-    return Response(status=200)
-
-
-def t():
-    while True:
-        pass
+    return response
 
 
 if __name__ == "__main__":

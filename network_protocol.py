@@ -35,5 +35,15 @@ def send_proof(receiver, json_tx, serialized_proof):
     return response.status_code
 
 
+def request_proof(miner, json_tx):
+    response = requests.post(
+        miner+'/req_proof',
+        data={
+            'transaction': json_tx,
+        }
+    )
+    return response.content
+
+
 if __name__ == "__main__":
     pass

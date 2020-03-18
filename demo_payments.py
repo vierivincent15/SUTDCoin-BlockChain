@@ -43,11 +43,11 @@ def send_transaction(sender, receiver, amount):
     )
 
     if (response.status_code == 200):
-        print("Transaction was successful")
+        print(f"Transaction to {receiver} was successful")
     elif (response.status_code == 500):
         print("Not enough coins")
     else:
-        print("Transaction was unsuccessful :(((")
+        print(f"Transaction to {receiver} was unsuccessful :(((")
 
 
 if __name__ == "__main__":
@@ -57,9 +57,16 @@ if __name__ == "__main__":
 
     time.sleep(10)
     for i in range(1, 4):
-        print(f"Sending Transaction {i}")
+        print(f"Sending transaction {i} from miner to client1")
         for miner in miners.values():
             job = Process(target=send_transaction,
                           args=(miner, 'client1', 30, ))
             job.start()
+        time.sleep(10)
+
+    for i in range(1, 4):
+        print(f"Sending transaction {i} from client1 to client2")
+        job = Process(target=send_transaction,
+                      args=(clients['client1'], 'client2', 30, ))
+        job.start()
         time.sleep(10)

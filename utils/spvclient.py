@@ -28,21 +28,13 @@ class SPVClient(object):
         newClient.headers = [[]]
         return newClient
 
-
     def send_transaction(self, receiver, amount, comment="COOL!"):
-        # TODO: check balance
-        # self.balance -= amount
+        if (self.balance < amount):
+            raise ValueError
+
         UTXO = Transaction.new(self.public_key, receiver,
                                amount, comment, self.private_key)
         return UTXO
-
-    def receive_transaction(self, transaction):
-        UTXO = Transaction(transaction.sender, transaction.receiver,
-                           transaction.amount, transaction.comment)
-        self.balance += transaction.amount
-
-    def verify_transaction(self, transaction):
-        return transaction.validate()
 
     def add_header(self, header):
         idxs = self.trace_prev_header(header["prev_header"])
@@ -55,7 +47,6 @@ class SPVClient(object):
             temp_header = self.headers[hc_idx][:h_idx+1].copy()
             temp_header.append(header)
             self.headers.append(temp_header)
-
 
     def trace_prev_header(self, prev_header):
         for i in range(len(self.headers)):
@@ -81,11 +72,11 @@ class SPVClient(object):
 
     def validate_transaction(self, transaction, proof, tree_root):
         longest_idx = self.identify_longest_header()
-        merkle_roots = [header["tree_root"] for header in self.headers[longest_idx]]
+        merkle_roots = [header["tree_root"]
+                        for header in self.headers[longest_idx]]
         if tree_root not in merkle_roots:
             return False
         return verify_proof(transaction, proof, tree_root)
-        
 
 
 if __name__ == "__main__":
