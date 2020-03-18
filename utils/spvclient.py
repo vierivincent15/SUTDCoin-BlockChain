@@ -27,9 +27,9 @@ class SPVClient(object):
         newClient.headers = [[]]
         return newClient
 
-    def receive_block_header(self, blockchain):
-        for key, value in blockchain.blockchains.items():
-            self.block_headers.append(value.to_json())
+    # def receive_block_header(self, blockchain):
+    #     for key, value in blockchain.blockchains.items():
+    #         self.block_headers.append(value.to_json())
 
     def send_transaction(self, receiver, amount, comment="COOL!"):
         # TODO: check balance
@@ -38,13 +38,13 @@ class SPVClient(object):
                                amount, comment, self.private_key)
         return UTXO
 
-    def receive_transaction(self, transaction):
-        UTXO = Transaction(transaction.sender, transaction.receiver,
-                           transaction.amount, transaction.comment)
-        self.balance += transaction.amount
+    # def receive_transaction(self, transaction):
+    #     UTXO = Transaction(transaction.sender, transaction.receiver,
+    #                        transaction.amount, transaction.comment)
+    #     self.balance += transaction.amount
 
-    def verify_transaction(self, transaction):
-        return transaction.validate()
+    # def verify_transaction(self, transaction):
+    #     return transaction.validate()
 
     def add_header(self, header):
         idxs = self.trace_prev_header(header["prev_header"])

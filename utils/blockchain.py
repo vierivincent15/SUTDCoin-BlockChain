@@ -157,21 +157,21 @@ class Blockchain:
         self.true_blockchain = max_index
         self.true_prev_header =  max_chain[-1].hash_header()
 
-    def resolve_fork_old(self):
-        if len(self.blockchains) > 1:
-            max_length = max([len(blockchain)
-                              for blockchain in self.blockchains])
-            new = []
-            new_balance = {}
-            counter = 0
-            for i in range(len(self.blockchains)):
-                if len(self.blockchains[i]) == max_length:
-                    new.append(self.blockchains[i])
-                    new_balance[counter] = self.balance[i]
-                    counter += 1
+    # def resolve_fork_old(self):
+    #     if len(self.blockchains) > 1:
+    #         max_length = max([len(blockchain)
+    #                           for blockchain in self.blockchains])
+    #         new = []
+    #         new_balance = {}
+    #         counter = 0
+    #         for i in range(len(self.blockchains)):
+    #             if len(self.blockchains[i]) == max_length:
+    #                 new.append(self.blockchains[i])
+    #                 new_balance[counter] = self.balance[i]
+    #                 counter += 1
 
-            self.blockchains = new
-            self.balance = new_balance
+    #         self.blockchains = new
+    #         self.balance = new_balance
 
     def trace_prev_header(self, prev_header):
         for i in range(len(self.blockchains)):
