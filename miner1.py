@@ -50,9 +50,8 @@ def start_mine():
             json_data = block.serialize()
             broadcast(miners, json_data, '/recv_block')
             broadcast_client(clients, block.serialize(True), '/recv_header')
-            for tx in block.transactions:
-                if (tx.tid in pending_tx):
-                    pending_tx[tx.tid] = miner.get_transaction_proof(tx)
+            for tid in pending_tx.keys():
+                pending_tx[tid] = pending_tx[tid] - 1
 
     # response = Response(response=json_data, status=201)
     return Response(status=200)
@@ -65,9 +64,8 @@ def receive_block():
     json_block = request.form['block']
     block = Block.deserialize(json_block)
     blockchain.add_block(block)
-    for tx in block.transactions:
-        if (tx.tid in pending_tx):
-            pending_tx[tx.tid] = miner.get_transaction_proof(tx)
+    for tid in pending_tx.keys():
+        pending_tx[tid] = pending_tx[tid] - 1
 
     return Response(status=200)
 
@@ -81,16 +79,18 @@ def send_transaction():
     try:
         pub_key = get_public_key(clients[receiver])
         tx = miner.send_transaction(pub_key, amount)
-        pending_tx[tx.tid] = None
+        pending_tx[tx.tid] = 3
         serialized_tx = tx.serialize()
         broadcast(miners, serialized_tx, '/recv_tx')
         print("Broadcasting Transaction")
 
-        while (pending_tx[tx.tid] == None):
+        while (pending_tx[tx.tid] != 0):
             time.sleep(1)
-        print("Got proof. Sending proof...")
+        print("Received enough transaction.")
+        proof = miner.get_transaction_proof(tx)
+        print("Sending proof...")
         status = send_proof(clients[receiver],
-                            serialized_tx, pending_tx[tx.tid])
+                            serialized_tx, proof)
 
         del (pending_tx[tx.tid])
         if(status == 200):

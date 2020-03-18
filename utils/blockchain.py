@@ -46,7 +46,7 @@ class Blockchain:
                 new_balance = self.aggregate_balance(bc_idx, b_idx)
                 new_balance = self.update_balance(new_balance, block)
                 self.balance[bc_idx] = new_balance
-            
+
             if resolve:
                 self.resolve_fork()
         else:
@@ -137,12 +137,12 @@ class Blockchain:
             for transaction in block.transactions:
                 if transaction.sender is not None:
                     sender = transaction.sender.to_string().hex()
-                    temp_dict[sender] -= transaction.amount
+                    temp_dict[sender] -= int(transaction.amount)
                 receiver = transaction.receiver.to_string().hex()
                 if receiver not in temp_dict:
-                    temp_dict[receiver] = transaction.amount
+                    temp_dict[receiver] = int(transaction.amount)
                 else:
-                    temp_dict[receiver] += transaction.amount
+                    temp_dict[receiver] += int(transaction.amount)
 
         return temp_dict
 
@@ -155,7 +155,7 @@ class Blockchain:
         max_chain = self.blockchains[max_index]
 
         self.true_blockchain = max_index
-        self.true_prev_header =  max_chain[-1].hash_header()
+        self.true_prev_header = max_chain[-1].hash_header()
 
     def resolve_fork_old(self):
         if len(self.blockchains) > 1:
