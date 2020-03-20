@@ -27,19 +27,21 @@ class Blockchain:
     def add_block(self, block, resolve=True):
         idxs = self.trace_prev_header(block.header["prev_header"])
         if self.validate_block(block, idxs):
-            bc_idx, b_idx = 0, 0
+            bc_idx, b_idx = 0, -1
             if idxs != -1:
                 bc_idx, b_idx = idxs
-            if (b_idx == len(self.blockchains[bc_idx]) - 1) or b_idx == 0:
+            # print(idxs,len(self.blockchains[bc_idx]))
+            if (b_idx == len(self.blockchains[bc_idx]) - 1) or b_idx == -1:
                 self.blockchains[bc_idx].append(block)
             else:
                 temp_blockchain = self.blockchains[bc_idx][:b_idx+1].copy()
                 temp_blockchain.append(block)
                 self.blockchains.append(temp_blockchain)
+                print(1)
 
             self.remove_transaction(block)
             self.add_tids(block)
-            if (b_idx == len(self.blockchains[bc_idx]) - 1) or b_idx == 0:
+            if (b_idx == len(self.blockchains[bc_idx]) - 1) or b_idx == -1:
                 self.balance[bc_idx] = self.update_balance(
                     self.balance[bc_idx], block)
             else:

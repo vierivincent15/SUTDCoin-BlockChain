@@ -18,20 +18,32 @@ print("done")
 print(blockchain)
 
 
-# sign_key = SigningKey.generate()
-# public_key = sign_key.get_verifying_key()
+sign_key = SigningKey.generate()
+public_key = sign_key.get_verifying_key()
 
-# miner2 = Miner(blockchain, public_key, sign_key)
-
-
-# miner1.send_transaction(miner2.public_key, 10)
-# miner1.send_transaction(miner2.public_key, 30)
-# miner1.send_transaction(miner2.public_key, 30)
+miner2 = Miner(blockchain, public_key, sign_key)
 
 
-# print("mining")
-# reward = miner2.mine()
-# print("done")
+miner1.send_transaction(miner2.public_key, 10)
+miner1.send_transaction(miner2.public_key, 30)
+miner1.send_transaction(miner2.public_key, 30)
+
+
+print("mining")
+reward = miner2.mine()
+print("done")
+
+print(blockchain)
+
+miner2.send_transaction(miner1.public_key, 10)
+miner2.send_transaction(miner1.public_key, 30)
+miner2.send_transaction(miner1.public_key, 30)
+
+print("mining")
+miner2.mine_malicious(blockchain.get_prev_header(0,0))
+print("done")
+
+print(blockchain)
 
 # print(miner2.get_transaction_proof(reward))
 # print(miner2.deserialize_proof(miner2.get_transaction_proof(reward)))
