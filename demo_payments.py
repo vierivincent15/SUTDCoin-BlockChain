@@ -67,6 +67,6 @@ if __name__ == "__main__":
     for i in range(1, 4):
         print(f"Sending transaction {i} from client1 to client2")
         job = Process(target=send_transaction,
-                      args=(clients['client1'], 'client2', 30, ))
+                      args=(clients['client1'], 'client2', 10, ))
         job.start()
         time.sleep(15)
