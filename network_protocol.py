@@ -18,6 +18,14 @@ def broadcast_client(clients, header, endpoint):
         )
 
 
+def broadcast_malicious(malicious, json_block, endpoint):
+    for miner in malicious.values():
+        response = requests.post(
+            miner+endpoint,
+            data={'block': json_block}
+        )
+
+
 def get_public_key(receiver):
     response = requests.get(receiver+'/pub')
     pub_key = VerifyingKey.from_string(response.content, curve=NIST192p)
@@ -43,6 +51,13 @@ def request_proof(miner, json_tx):
         }
     )
     return response.content
+
+
+def start_malicious(miner):
+    response = requests.post(
+        miner+'/init',
+        data={}
+    )
 
 
 if __name__ == "__main__":

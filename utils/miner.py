@@ -78,15 +78,17 @@ class Miner:
     def mine_malicious(self, prev_header=None, bc_idx=-1, b_idx=-1, continuous=False, need_transaction=True):
         global TARGET
         pow_val = TARGET
+        t1 = time.time()
 
         reward = Transaction.new(
             None, self.public_key, self.reward, "Reward", None)
-        
+
         printhelper = True
 
         if prev_header is not None:
             if continuous:
-                raise ValueError("continuous cannot be True if prev_header is used!")
+                raise ValueError(
+                    "continuous cannot be True if prev_header is used!")
             else:
                 if need_transaction:
                     while len(self.blockchain.tx_pool) < 1 and len(self.blockchain.blockchains[0]) > 0:
@@ -119,7 +121,7 @@ class Miner:
                         return block
                     except ValueError:
                         raise
-                
+
                 if need_transaction:
                     if len(self.blockchain.tx_pool) < 1 and len(self.blockchain.blockchains[0]) > 0:
                         if printhelper:

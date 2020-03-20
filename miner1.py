@@ -3,8 +3,9 @@ from utils.miner import Miner
 from utils.block import Block
 from utils.blockchain import Blockchain
 from utils.transaction import Transaction
-from network_protocol import broadcast, broadcast_client, get_public_key, send_proof
+from network_protocol import broadcast, broadcast_client, get_public_key, send_proof, start_malicious, broadcast_malicious
 from ecdsa import SigningKey, VerifyingKey, BadSignatureError
+from multiprocessing import Process
 import requests
 import time
 
@@ -13,6 +14,11 @@ miners = ['http://127.0.0.1:5012']
 clients = {
     'client1': 'http://127.0.0.1:5001',
     'client2': 'http://127.0.0.1:5002'
+}
+malicious = {
+    'malicious1': 'http://127.0.0.1:5021',
+    'malicious2': 'http://127.0.0.1:5022',
+    'malicious3': 'http://127.0.0.1:5023'
 }
 
 blockchain = Blockchain()
@@ -41,15 +47,28 @@ def get_pub_key():
 
 @app.route('/init', methods=['POST'])
 def start_mine():
-    global miners, miner, pending_tx, clients
+    global miners, miner, pending_tx, clients, malicious
 
+    wait = request.form['wait']
+    if (wait == 'no'):
+        wait = False
+    else:
+        wait = True
     while True:
         print("Mining")
-        block = miner.mine()
+        block = miner.mine(wait)
         if (block):
             json_data = block.serialize()
             broadcast(miners, json_data, '/recv_block')
-            broadcast_client(clients, block.serialize(True), '/recv_header')
+            if(wait):
+                broadcast_client(
+                    clients, block.serialize(True), '/recv_header')
+            else:
+                broadcast_malicious(malicious, json_data, '/recv_block')
+                if(len(miner.blockchain.blockchains[0]) == 3):
+                    for m in malicious.values():
+                        job = Process(target=start_malicious, args=(m, ))
+                        job.start()
             for tid in pending_tx.keys():
                 pending_tx[tid] = pending_tx[tid] - 1
 
