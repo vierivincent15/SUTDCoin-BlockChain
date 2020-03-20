@@ -75,7 +75,7 @@ class Miner:
             block = Block.new(transactions, prev_header)
             pow_val = block.hash_header()
 
-    def mine_malicious(self, prev_header=None, bc_idx=-1, b_idx=-1, continuous=False, need_transaction=True):
+    def mine_malicious(self, prev_header=None, bc_idx=-1, b_idx=-1, continuous=True, need_transaction=True):
         global TARGET
         pow_val = TARGET
         t1 = time.time()
@@ -104,11 +104,11 @@ class Miner:
                 block = Block.new(transactions, prev_header)
                 pow_val = block.hash_header()
 
-                try:
-                    self.blockchain.add_block(block)
-                    return block
-                except ValueError:
-                    raise
+            try:
+                self.blockchain.add_block(block)
+                return block
+            except ValueError:
+                raise
 
         else:
             if prev_header is not None:
