@@ -66,10 +66,9 @@ def start_mine():
             else:
                 broadcast_malicious(malicious, json_data, '/recv_block')
                 if(len(miner.blockchain.blockchains[0]) == 3):
-                    for m in malicious.values():
-                        job = Process(target=start_malicious, args=(m, ))
-                        job.start()
-                    time.sleep(3)
+                    job = Process(target=start_malicious,
+                                  args=(malicious['malicious1'], ))
+                    job.start()
             for tid in pending_tx.keys():
                 pending_tx[tid] = pending_tx[tid] - 1
 

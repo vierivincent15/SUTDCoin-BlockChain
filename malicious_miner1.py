@@ -42,17 +42,25 @@ def get_pub_key():
 
 @app.route('/init', methods=['POST'])
 def start_mine():
-    global miners, miner, pending_tx, malicious
+    global miners, miner, malicious
+
+    # start the second chain
+    print("Mining second chain")
+    block = miner.mine_malicious(bc_idx=0, b_idx=1, need_transaction=False)
+    json_data = block.serialize()
+    broadcast(miners, json_data, '/recv_block')
+    broadcast_malicious(malicious, json_data, '/recv_block')
+    for m in malicious.values():
+        job = Process(target=start_malicious, args=(m, ))
+        job.start()
 
     while True:
         print("Mining")
-        block = miner.mine_malicious(need_transaction=False)
+        block = miner.mine_malicious(bc_idx=1, need_transaction=False)
         if (block):
             json_data = block.serialize()
             broadcast(miners, json_data, '/recv_block')
             broadcast_malicious(malicious, json_data, '/recv_block')
-            for tid in pending_tx.keys():
-                pending_tx[tid] = pending_tx[tid] - 1
 
     return Response(status=200)
 
@@ -63,7 +71,7 @@ def receive_block():
 
     json_block = request.form['block']
     block = Block.deserialize(json_block)
-    print(blockchain.balance)
+
     blockchain.add_block(block)
     for tid in pending_tx.keys():
         pending_tx[tid] = pending_tx[tid] - 1

@@ -46,7 +46,7 @@ def start_mine():
 
     while True:
         print("Mining")
-        block = miner.mine_malicious(need_transaction=False)
+        block = miner.mine_malicious(bc_idx=1, need_transaction=False)
         if (block):
             json_data = block.serialize()
             broadcast(miners, json_data, '/recv_block')
@@ -63,7 +63,7 @@ def receive_block():
 
     json_block = request.form['block']
     block = Block.deserialize(json_block)
-    print(blockchain.balance)
+
     blockchain.add_block(block)
     for tid in pending_tx.keys():
         pending_tx[tid] = pending_tx[tid] - 1
