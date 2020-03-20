@@ -21,7 +21,7 @@ miners = {
 def start_mine(miner):
     response = requests.post(
         miners[miner]+'/init',
-        data={}
+        data={'wait': 'yes'}
     )
 
     # response = requests.post(

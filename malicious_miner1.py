@@ -63,6 +63,7 @@ def receive_block():
 
     json_block = request.form['block']
     block = Block.deserialize(json_block)
+    print(blockchain.balance)
     blockchain.add_block(block)
     for tid in pending_tx.keys():
         pending_tx[tid] = pending_tx[tid] - 1

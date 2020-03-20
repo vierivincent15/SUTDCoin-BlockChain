@@ -69,6 +69,7 @@ def start_mine():
                     for m in malicious.values():
                         job = Process(target=start_malicious, args=(m, ))
                         job.start()
+                    time.sleep(3)
             for tid in pending_tx.keys():
                 pending_tx[tid] = pending_tx[tid] - 1
 

@@ -47,7 +47,7 @@ class Blockchain:
             else:
                 new_balance = self.aggregate_balance(bc_idx, b_idx)
                 new_balance = self.update_balance(new_balance, block)
-                self.balance.append()
+                self.balance.append({})
                 self.balance[bc_idx] = new_balance
 
             if resolve:
