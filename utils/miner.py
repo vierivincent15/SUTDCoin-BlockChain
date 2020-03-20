@@ -75,7 +75,7 @@ class Miner:
             block = Block.new(transactions, prev_header)
             pow_val = block.hash_header()
 
-    def mine_malicious(self, prev_header=None, bc_idx=-1, b_idx=-1, continuous=False, need_transaction=True):
+    def mine_malicious(self, prev_header=None, bc_idx=-1, b_idx=-1, continuous=True, need_transaction=True):
         global TARGET
         pow_val = TARGET
         t1 = time.time()
@@ -90,25 +90,25 @@ class Miner:
                 prev_header = self.blockchain.get_prev_header(bc_idx, b_idx)
             
             if need_transaction:
-                    while len(self.blockchain.tx_pool) < 1 and len(self.blockchain.blockchains[0]) > 0:
-                        if printhelper:
-                            print("Waiting for more transactions...")
-                            printhelper = False
-                        continue
+                while len(self.blockchain.tx_pool) < 1 and len(self.blockchain.blockchains[0]) > 0:
+                    if printhelper:
+                        print("Waiting for more transactions...")
+                        printhelper = False
+                    continue
             
             transactions = self.blockchain.tx_pool.copy()
 
             transactions.insert(0, reward)
 
             while pow_val >= TARGET:
-                    block = Block.new(transactions, prev_header)
-                    pow_val = block.hash_header()
+                block = Block.new(transactions, prev_header)
+                pow_val = block.hash_header()
 
-                try:
-                    self.blockchain.add_block(block)
-                    return block
-                except ValueError:
-                    raise
+            try:
+                self.blockchain.add_block(block)
+                return block
+            except ValueError:
+                raise
 
         else:
             if prev_header is not None:
