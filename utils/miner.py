@@ -45,7 +45,7 @@ class Miner:
         serialization['root'] = proof_with_root[1].hex()
         return json.dumps(serialization)
 
-    def mine(self, debug_mode=False):
+    def mine(self, need_transaction=True):
         global TARGET
         pow_val = TARGET
         reward = Transaction.new(
@@ -62,12 +62,12 @@ class Miner:
                     return block
                 except ValueError:
                     raise
-
-            if len(self.blockchain.tx_pool) < 1 and len(self.blockchain.blockchains[0]) > 0:
-                if printhelper:
-                    print("Waiting for more transactions...")
-                    printhelper = False
-                continue
+            if need_transaction:
+                if len(self.blockchain.tx_pool) < 1 and len(self.blockchain.blockchains[0]) > 0:
+                    if printhelper:
+                        print("Waiting for more transactions...")
+                        printhelper = False
+                    continue
 
             prev_header = self.blockchain.true_prev_header
             transactions = self.blockchain.tx_pool.copy()
@@ -75,7 +75,7 @@ class Miner:
             block = Block.new(transactions, prev_header)
             pow_val = block.hash_header()
 
-    def mine_malicious(self, prev_header=None, bc_idx=-1, b_idx=-1, continuous=False):
+    def mine_malicious(self, prev_header=None, bc_idx=-1, b_idx=-1, continuous=False, need_transaction=True):
         global TARGET
         pow_val = TARGET
 
@@ -88,11 +88,12 @@ class Miner:
             if continuous:
                 raise ValueError("continuous cannot be True if prev_header is used!")
             else:
-                while len(self.blockchain.tx_pool) < 1 and len(self.blockchain.blockchains[0]) > 0:
-                    if printhelper:
-                        print("Waiting for more transactions...")
-                        printhelper = False
-                    continue
+                if need_transaction:
+                    while len(self.blockchain.tx_pool) < 1 and len(self.blockchain.blockchains[0]) > 0:
+                        if printhelper:
+                            print("Waiting for more transactions...")
+                            printhelper = False
+                        continue
 
                 transactions = self.blockchain.tx_pool.copy()
 
@@ -119,11 +120,12 @@ class Miner:
                     except ValueError:
                         raise
                 
-                if len(self.blockchain.tx_pool) < 1 and len(self.blockchain.blockchains[0]) > 0:
-                    if printhelper:
-                        print("Waiting for more transactions...")
-                        printhelper = False
-                    continue
+                if need_transaction:
+                    if len(self.blockchain.tx_pool) < 1 and len(self.blockchain.blockchains[0]) > 0:
+                        if printhelper:
+                            print("Waiting for more transactions...")
+                            printhelper = False
+                        continue
 
                 if bc_idx < len(self.blockchain.blockchains):
                     if b_idx < len(self.blockchain.blockchains[bc_idx]):
