@@ -7,10 +7,14 @@ from multiprocessing import Process
 import requests
 import time
 
-miner_server = 'http://127.0.0.1:5000'
 clients = {
     'client1': 'http://127.0.0.1:5001',
     'client2': 'http://127.0.0.1:5002'
+}
+malicious = {
+    'malicious1': 'http://127.0.0.1:5021',
+    'malicious2': 'http://127.0.0.1:5022',
+    'malicious3': 'http://127.0.0.1:5023'
 }
 miners = {
     'miner1': 'http://127.0.0.1:5011',
@@ -21,16 +25,8 @@ miners = {
 def start_mine(miner):
     response = requests.post(
         miners[miner]+'/init',
-        data={}
+        data={'wait': 'no'}
     )
-
-    # response = requests.post(
-    #     miners['miner1']+'/send',
-    #     data={
-    #         'receiver': 'client1',
-    #         'amount': 100
-    #     }
-    # )
 
 
 def send_transaction(sender, receiver, amount):
@@ -55,18 +51,18 @@ if __name__ == "__main__":
         job = Process(target=start_mine, args=(miner, ))
         job.start()
 
-    time.sleep(10)
-    for i in range(1, 4):
-        print(f"Sending transaction {i} from miner to client1")
-        for miner in miners.values():
-            job = Process(target=send_transaction,
-                          args=(miner, 'client1', 30, ))
-            job.start()
-        time.sleep(15)
+    # time.sleep(10)
+    # for i in range(1, 4):
+    #     print(f"Sending transaction {i} from miner to client1")
+    #     for miner in miners.values():
+    #         job = Process(target=send_transaction,
+    #                       args=(miner, 'client1', 10, ))
+    #         job.start()
+    #     time.sleep(15)
 
-    for i in range(1, 4):
-        print(f"Sending transaction {i} from client1 to client2")
-        job = Process(target=send_transaction,
-                      args=(clients['client1'], 'client2', 30, ))
-        job.start()
-        time.sleep(15)
+    # for i in range(1, 4):
+    #     print(f"Sending transaction {i} from client1 to client2")
+    #     job = Process(target=send_transaction,
+    #                   args=(clients['client1'], 'client2', 30, ))
+    #     job.start()
+    #     time.sleep(15)
