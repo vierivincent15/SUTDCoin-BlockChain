@@ -99,7 +99,7 @@ def verify_proof(entry, proof, root):
         return False
 
     proof_idx, proof_ls = proof
-    to_hash = str.encode(entry + "leaf")
+    to_hash = str.encode(entry.serialize() + "leaf")
     m = hashlib.sha256()
     m.update(to_hash)
     hash_entry = m.digest()
