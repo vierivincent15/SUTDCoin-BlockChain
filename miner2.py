@@ -135,6 +135,16 @@ def receive_transaction():
         return Response(status=500)
 
 
+@app.route('/get_balance', method=['GET'])
+def get_balance():
+    global miner
+
+    balance = miner.blockchain.balance
+    response = Response(response=balance, status=200)
+
+    return response
+
+
 if __name__ == "__main__":
     ip = ""
     if (ip == ""):

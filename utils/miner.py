@@ -69,7 +69,7 @@ class Miner:
                         printhelper = False
                     continue
 
-            prev_header = self.blockchain.prev_header
+            prev_header = self.blockchain.true_prev_header
             transactions = self.blockchain.tx_pool.copy()
             transactions.insert(0, reward)
             block = Block.new(transactions, prev_header)

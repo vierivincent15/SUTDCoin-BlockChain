@@ -149,6 +149,16 @@ def get_proof():
     return response
 
 
+@app.route('/get_balance', method=['GET'])
+def get_balance():
+    global miner
+
+    balance = miner.blockchain.balance
+    response = Response(response=balance, status=200)
+
+    return response
+
+
 if __name__ == "__main__":
     ip = ""
     if (ip == ""):
