@@ -37,7 +37,6 @@ class Blockchain:
                 temp_blockchain = self.blockchains[bc_idx][:b_idx+1].copy()
                 temp_blockchain.append(block)
                 self.blockchains.append(temp_blockchain)
-                print(1)
 
             self.remove_transaction(block)
             self.add_tids(block)
@@ -186,7 +185,13 @@ class Blockchain:
         return -1
 
     def get_prev_header(self, bc_idx, b_idx):
-        return self.blockchains[bc_idx][b_idx].hash_header()
+        if bc_idx < len(self.blockchains):
+            if b_idx < len(self.blockchains[bc_idx]):
+                return self.blockchains[bc_idx][b_idx].hash_header()
+            else:
+                raise IndexError
+        else:
+            raise IndexError
 
     def get_transaction_proof(self, transaction):
         for block in self.blockchains[self.true_blockchain]:

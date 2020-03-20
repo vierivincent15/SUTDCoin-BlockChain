@@ -69,7 +69,7 @@ class Miner:
                         printhelper = False
                     continue
 
-            prev_header = self.blockchain.true_prev_header
+            prev_header = self.blockchain.prev_header
             transactions = self.blockchain.tx_pool.copy()
             transactions.insert(0, reward)
             block = Block.new(transactions, prev_header)
@@ -85,23 +85,22 @@ class Miner:
 
         printhelper = True
 
-        if prev_header is not None:
-            if continuous:
-                raise ValueError(
-                    "continuous cannot be True if prev_header is used!")
-            else:
-                if need_transaction:
+        if not continuous:
+            if prev_header is None:
+                prev_header = self.blockchain.get_prev_header(bc_idx, b_idx)
+            
+            if need_transaction:
                     while len(self.blockchain.tx_pool) < 1 and len(self.blockchain.blockchains[0]) > 0:
                         if printhelper:
                             print("Waiting for more transactions...")
                             printhelper = False
                         continue
+            
+            transactions = self.blockchain.tx_pool.copy()
 
-                transactions = self.blockchain.tx_pool.copy()
+            transactions.insert(0, reward)
 
-                transactions.insert(0, reward)
-
-                while pow_val >= TARGET:
+            while pow_val >= TARGET:
                     block = Block.new(transactions, prev_header)
                     pow_val = block.hash_header()
 
@@ -112,6 +111,9 @@ class Miner:
                     raise
 
         else:
+            if prev_header is not None:
+                raise ValueError(
+                    "continuous cannot be True if prev_header is used!")
             while True:
                 # print(pow_val)
                 if pow_val < TARGET:
@@ -129,15 +131,9 @@ class Miner:
                             printhelper = False
                         continue
 
-                if bc_idx < len(self.blockchain.blockchains):
-                    if b_idx < len(self.blockchain.blockchains[bc_idx]):
-                        prev_header = self.blockchain.get_prev_header(
-                            bc_idx, b_idx)
-                    else:
-                        raise IndexError
-                else:
-                    raise IndexError
-
+                
+                prev_header = self.blockchain.get_prev_header(bc_idx, b_idx)
+                    
                 transactions = self.blockchain.tx_pool.copy()
                 transactions.insert(0, reward)
                 block = Block.new(transactions, prev_header)
