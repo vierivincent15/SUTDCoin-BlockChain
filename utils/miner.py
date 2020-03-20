@@ -20,7 +20,6 @@ class Miner:
     def __init__(self, blockchain, public_key, sign_key):
         self.id = uuid.uuid4().hex
         self.blockchain = blockchain
-        self.ip = None
         self.public_key = public_key
         self.reward = 100
         self.sign_key = sign_key
@@ -53,7 +52,7 @@ class Miner:
         root = bytes.fromhex(serialization['root'])
         return ([proof_idx, proof], root)
 
-    def mine(self, debug_mode=False):
+    def mine(self):
         global TARGET
         pow_val = TARGET
         reward = Transaction.new(
@@ -83,36 +82,69 @@ class Miner:
             block = Block.new(transactions, prev_header)
             pow_val = block.hash_header()
 
-    def mine_malicious(self, prev_header=None, bc_idx=0, b_idx=-1):
+    def mine_malicious(self, prev_header=None, bc_idx=-1, b_idx=-1, continuous=False):
         global TARGET
         pow_val = TARGET
 
-        if prev_header is None:
-            if bc_idx < len(self.blockchain.blockchains):
-                if b_idx < len(self.blockchain.blockchains[bc_idx]):
-                    prev_header = self.blockchain.get_prev_header(
-                        bc_idx, b_idx)
-                else:
-                    raise IndexError
-            else:
-                raise IndexError
-
-        transactions = self.blockchain.tx_pool.copy()
-#         for transaction in transactions:
-#             transaction.validate()
         reward = Transaction.new(
             None, self.public_key, self.reward, "Reward", None)
-        transactions.insert(0, reward)
+        
+        printhelper = True
 
-        while pow_val >= TARGET:
-            block = Block.new(transactions, prev_header)
-            pow_val = block.hash_header()
+        if prev_header is not None:
+            if continuous:
+                raise ValueError("continuous cannot be True if prev_header is used!")
+            else:
+                while len(self.blockchain.tx_pool) < 1 and len(self.blockchain.blockchains[0]) > 0:
+                    if printhelper:
+                        print("Waiting for more transactions...")
+                        printhelper = False
+                    continue
 
-        try:
-            self.blockchain.add_block(block)
-            return block
-        except ValueError:
-            raise
+                transactions = self.blockchain.tx_pool.copy()
+
+                transactions.insert(0, reward)
+
+                while pow_val >= TARGET:
+                    block = Block.new(transactions, prev_header)
+                    pow_val = block.hash_header()
+
+                try:
+                    self.blockchain.add_block(block)
+                    return block
+                except ValueError:
+                    raise
+
+        else:
+            while True:
+                # print(pow_val)
+                if pow_val < TARGET:
+                    try:
+                        self.blockchain.add_block(block)
+                        print(time.time()-t1)
+                        return block
+                    except ValueError:
+                        raise
+                
+                if len(self.blockchain.tx_pool) < 1 and len(self.blockchain.blockchains[0]) > 0:
+                    if printhelper:
+                        print("Waiting for more transactions...")
+                        printhelper = False
+                    continue
+
+                if bc_idx < len(self.blockchain.blockchains):
+                    if b_idx < len(self.blockchain.blockchains[bc_idx]):
+                        prev_header = self.blockchain.get_prev_header(
+                            bc_idx, b_idx)
+                    else:
+                        raise IndexError
+                else:
+                    raise IndexError
+
+                transactions = self.blockchain.tx_pool.copy()
+                transactions.insert(0, reward)
+                block = Block.new(transactions, prev_header)
+                pow_val = block.hash_header()
 
 
 # to test implementation
