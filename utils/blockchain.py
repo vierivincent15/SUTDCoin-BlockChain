@@ -199,6 +199,12 @@ class Blockchain:
             out += '\n'.join(chain)
             out += '\n'
 
+        out += "\nTrue balance:\n"
+
+        balance = self.balance[self.true_blockchain]
+        for user in balance:
+            out += user + ": " + str(balance[user])
+
         return out
 
 

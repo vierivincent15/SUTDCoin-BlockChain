@@ -15,6 +15,8 @@ print("mining")
 block = miner1.mine()
 print("done")
 
+print(blockchain)
+
 
 # sign_key = SigningKey.generate()
 # public_key = sign_key.get_verifying_key()
