@@ -45,6 +45,10 @@ class Miner:
         serialization['root'] = proof_with_root[1].hex()
         return json.dumps(serialization)
 
+    def get_balance(self, chain):
+        balance = self.blockchain.balance[chain]
+        return json.dumps(balance)  
+      
     def mine(self, need_transaction=True):
         global TARGET
         pow_val = TARGET
@@ -52,13 +56,13 @@ class Miner:
             None, self.public_key, self.reward, "Reward", None)
         t1 = time.time()
         printhelper = True
-
+  
         while True:
             # print(pow_val)
             if pow_val < TARGET:
                 try:
                     self.blockchain.add_block(block)
-                    print(time.time()-t1)
+                    print(f"Time taken: {time.time()-t1}")
                     return block
                 except ValueError:
                     raise
@@ -68,7 +72,7 @@ class Miner:
                         print("Waiting for more transactions...")
                         printhelper = False
                     continue
-
+       
             prev_header = self.blockchain.true_prev_header
             transactions = self.blockchain.tx_pool.copy()
             transactions.insert(0, reward)
@@ -97,7 +101,7 @@ class Miner:
                     continue
 
             transactions = self.blockchain.tx_pool.copy()
-
+           
             transactions.insert(0, reward)
 
             while pow_val >= TARGET:
@@ -146,7 +150,7 @@ if __name__ == "__main__":
     blockchain = Blockchain()
 
     print(blockchain.blockchains)
-
+  
     sign_key = SigningKey.generate()
     public_key = sign_key.get_verifying_key()
 

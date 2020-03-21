@@ -57,6 +57,7 @@ def start_mine():
     while True:
         print("Mining")
         block = miner.mine(wait)
+
         if (block):
             json_data = block.serialize()
             broadcast(miners, json_data, '/recv_block')
@@ -149,11 +150,11 @@ def get_proof():
     return response
 
 
-@app.route('/get_balance', method=['GET'])
+@app.route('/get_balance', methods=['GET'])
 def get_balance():
     global miner
 
-    balance = miner.blockchain.balance
+    balance = miner.get_balance(0)
     response = Response(response=balance, status=200)
 
     return response

@@ -12,7 +12,7 @@ from ecdsa import SigningKey
 import hashlib
 import time
 import json
-
+   
 
 class SPVClient(object):
 
@@ -69,7 +69,7 @@ class SPVClient(object):
         proof = [bytes.fromhex(proof) for proof in serialization['proof']]
         root = bytes.fromhex(serialization['root'])
         return ([proof_idx, proof], root)
-
+   
     def validate_transaction(self, transaction, proof, tree_root):
         longest_idx = self.identify_longest_header()
         merkle_roots = [header["tree_root"]

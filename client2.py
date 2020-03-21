@@ -32,6 +32,16 @@ def get_pub_key():
     return response
 
 
+@app.route('/get_balance', methods=['GET'])
+def get_balance():
+    global client
+
+    balance = client.balance
+    response = Response(response=str(balance), status=200)
+
+    return response
+
+
 @app.route('/send', methods=['POST'])
 def create_transaction():
     global clients, client, pending_tx
