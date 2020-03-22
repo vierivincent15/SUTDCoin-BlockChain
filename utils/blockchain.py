@@ -22,7 +22,7 @@ class Blockchain:
         self.tx_pool = []
         self.tids = set()
         self.balance = {self.true_blockchain: {}}
-        self.true_prev_header = b'genesis block'
+        self.prev_header = [b'genesis block']
 
     def add_block(self, block, resolve=True, print_idx=False):
         idxs = self.trace_prev_header(block.header["prev_header"])
@@ -162,7 +162,11 @@ class Blockchain:
         max_chain = self.blockchains[max_index]
 
         self.true_blockchain = max_index
-        self.true_prev_header = max_chain[-1].hash_header()
+
+        self.prev_header = []
+        for chain in self.blockchains:
+            self.prev_header.append(chain[-1].hash_header())
+        # self.true_prev_header = max_chain[-1].hash_header()
 
     # def resolve_fork_old(self):
     #     if len(self.blockchains) > 1:

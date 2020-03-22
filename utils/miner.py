@@ -73,7 +73,7 @@ class Miner:
                         printhelper = False
                     continue
 
-            prev_header = self.blockchain.true_prev_header
+            prev_header = self.blockchain.prev_header[self.blockchain.true_blockchain]
             transactions = self.blockchain.tx_pool.copy()
             transactions.insert(0, reward)
             block = Block.new(transactions, prev_header)
@@ -122,6 +122,7 @@ class Miner:
                 # print(pow_val)
                 if pow_val < TARGET:
                     try:
+                        print(bc_idx, b_idx)
                         self.blockchain.add_block(block,print_idx=True)
                         print(time.time()-t1)
                         return block
@@ -134,8 +135,8 @@ class Miner:
                             print("Waiting for more transactions...")
                             printhelper = False
                         continue
-
-                prev_header = self.blockchain.get_prev_header(bc_idx, b_idx)
+                
+                prev_header = self.blockchain.prev_header[bc_idx]
 
                 transactions = self.blockchain.tx_pool.copy()
                 transactions.insert(0, reward)
