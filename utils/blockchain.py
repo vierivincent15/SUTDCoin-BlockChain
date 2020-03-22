@@ -21,6 +21,7 @@ class Blockchain:
         self.tids = set()
         self.balance = {self.true_blockchain: {}}
         self.prev_header = [b'genesis block']
+        self.private_chain = []
 
     def add_block(self, block, resolve=True, print_idx=False):
         idxs = self.trace_prev_header(block.header["prev_header"])
@@ -153,14 +154,14 @@ class Blockchain:
         chain_length = [len(chain) for chain in self.blockchains]
         max_index = chain_length.index(max(chain_length))
 
-        max_chain = self.blockchains[max_index]
+        # max_chain = self.blockchains[max_index]
 
         self.true_blockchain = max_index
 
-        self.prev_header = []
+        prev_header = []
         for chain in self.blockchains:
-            self.prev_header.append(chain[-1].hash_header())
-
+            prev_header.append(chain[-1].hash_header())
+        self.prev_header = prev_header.copy()
 
     def trace_prev_header(self, prev_header):
         for i in range(len(self.blockchains)):
