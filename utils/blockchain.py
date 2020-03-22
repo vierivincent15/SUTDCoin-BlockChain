@@ -14,8 +14,6 @@ import hashlib
 
 class Blockchain:
 
-    # target = b"\x00\x00\x0f\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff"
-
     def __init__(self):
         self.blockchains = [[]]
         self.true_blockchain = 0
@@ -108,7 +106,6 @@ class Blockchain:
         else:
             raise ValueError("Could Not Add Transaction")
 
-    # to add in to add block later
     def remove_transaction(self, block):
         for transaction in block.transactions:
             try:
@@ -116,12 +113,10 @@ class Blockchain:
             except ValueError:
                 continue
 
-    # to add in to add block later
     def add_tids(self, block):
         for transaction in block.transactions:
             self.tids.add(transaction.tid)
 
-    # to add in to add block later
     def update_balance(self, balance, block):
         temp_dict = balance.copy()
         for transaction in block.transactions:
@@ -137,8 +132,6 @@ class Blockchain:
         return temp_dict
 
     def aggregate_balance(self, blockchain_idx, block_idx):
-        # I need the blockchain index as well as the block index for this function
-        # If block header is given, the index will be recomputed twice
 
         temp_dict = {}
         for block in self.blockchains[blockchain_idx][:block_idx+1]:
@@ -167,23 +160,7 @@ class Blockchain:
         self.prev_header = []
         for chain in self.blockchains:
             self.prev_header.append(chain[-1].hash_header())
-        # self.true_prev_header = max_chain[-1].hash_header()
 
-    # def resolve_fork_old(self):
-    #     if len(self.blockchains) > 1:
-    #         max_length = max([len(blockchain)
-    #                           for blockchain in self.blockchains])
-    #         new = []
-    #         new_balance = {}
-    #         counter = 0
-    #         for i in range(len(self.blockchains)):
-    #             if len(self.blockchains[i]) == max_length:
-    #                 new.append(self.blockchains[i])
-    #                 new_balance[counter] = self.balance[i]
-    #                 counter += 1
-
-    #         self.blockchains = new
-    #         self.balance = new_balance
 
     def trace_prev_header(self, prev_header):
         for i in range(len(self.blockchains)):

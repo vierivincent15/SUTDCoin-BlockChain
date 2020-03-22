@@ -76,20 +76,4 @@ class Transaction:
 
 # to test implementation
 if __name__ == "__main__":
-    amount = 1000
-    comment = "COOL!"
-
-    sign_key_1 = SigningKey.generate()
-    sender = sign_key_1.get_verifying_key()
-
-    sign_key_2 = SigningKey.generate()
-    receiver = sign_key_2.get_verifying_key()
-
-    Tx = Transaction.new(None, receiver, amount, comment, sign_key_1)
-
-    a = Tx.serialize()
-    b = Transaction.deserialize(a)
-
-    print(Tx == b)
-    print(Tx.tid)
-    print(b.tid)
+    pass
