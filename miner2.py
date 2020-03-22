@@ -8,8 +8,13 @@ from ecdsa import SigningKey, VerifyingKey, BadSignatureError
 from multiprocessing import Process
 import requests
 import time
+import logging
+
 
 app = Flask(__name__)
+log = logging.getLogger('werkzeug')
+log.disabled = True
+
 miners = ['http://127.0.0.1:5011']
 clients = {
     'client1': 'http://127.0.0.1:5001',

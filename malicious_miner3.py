@@ -9,7 +9,12 @@ from multiprocessing import Process
 import requests
 import time
 
+import logging
+
 app = Flask(__name__)
+log = logging.getLogger('werkzeug')
+log.disabled = True
+
 miners = ['http://127.0.0.1:5011', 'http://127.0.0.1:5012']
 malicious = {
     'malicious2': 'http://127.0.0.1:5021',
