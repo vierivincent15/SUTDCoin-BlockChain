@@ -24,12 +24,16 @@ class Blockchain:
         self.balance = {self.true_blockchain: {}}
         self.true_prev_header = b'genesis block'
 
-    def add_block(self, block, resolve=True):
+    def add_block(self, block, resolve=True, print_idx=False):
         idxs = self.trace_prev_header(block.header["prev_header"])
+        if print_idx:
+                print(idxs)
         if self.validate_block(block, idxs):
             bc_idx, b_idx = 0, -1
             if idxs != -1:
                 bc_idx, b_idx = idxs
+            if print_idx:
+                print(bc_idx, b_idx)
             # print(idxs,len(self.blockchains[bc_idx]))
             if (b_idx == len(self.blockchains[bc_idx]) - 1) or b_idx == -1:
                 self.blockchains[bc_idx].append(block)
@@ -44,7 +48,7 @@ class Blockchain:
                 self.balance[bc_idx] = self.update_balance(
                     self.balance[bc_idx], block)
             else:
-                print(bc_idx, b_idx)
+                # print(bc_idx, b_idx)
                 new_balance = self.aggregate_balance(bc_idx, b_idx)
                 new_balance = self.update_balance(new_balance, block)
                 # self.balance.append(new_balance)

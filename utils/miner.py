@@ -61,7 +61,7 @@ class Miner:
             # print(pow_val)
             if pow_val < TARGET:
                 try:
-                    self.blockchain.add_block(block)
+                    self.blockchain.add_block(block,print_idx=True)
                     print(f"Time taken: {time.time()-t1}")
                     return block
                 except ValueError:
@@ -88,7 +88,7 @@ class Miner:
             None, self.public_key, self.reward, "Reward", None)
 
         printhelper = True
-
+        # print(bc_idx, b_idx)
         if not continuous:
             if prev_header is None:
                 prev_header = self.blockchain.get_prev_header(bc_idx, b_idx)
@@ -109,7 +109,7 @@ class Miner:
                 pow_val = block.hash_header()
 
             try:
-                self.blockchain.add_block(block)
+                self.blockchain.add_block(block,print_idx=True)
                 return block
             except ValueError:
                 raise
@@ -122,7 +122,7 @@ class Miner:
                 # print(pow_val)
                 if pow_val < TARGET:
                     try:
-                        self.blockchain.add_block(block)
+                        self.blockchain.add_block(block,print_idx=True)
                         print(time.time()-t1)
                         return block
                     except ValueError:
