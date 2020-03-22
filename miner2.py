@@ -94,6 +94,8 @@ def receive_block():
     json_block = request.form['block']
     block = Block.deserialize(json_block)
     blockchain.add_block(block)
+    x = [len(chain) for chain in blockchain.blockchains]
+    print(x)
     for tid in pending_tx.keys():
         pending_tx[tid] = pending_tx[tid] - 1
 

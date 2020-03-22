@@ -10,7 +10,7 @@ except:
     from utils.config import TARGET
 from json import dumps, loads
 import hashlib
-import random
+from copy import deepcopy
 
 
 class Blockchain:
@@ -44,10 +44,6 @@ class Blockchain:
 
             self.remove_transaction(block)
             self.add_tids(block)
-
-            if resolve:
-                self.resolve_fork()
-
             if (b_idx == len(self.blockchains[bc_idx]) - 1) or b_idx == -1:
                 self.balance[bc_idx] = self.update_balance(
                     self.balance[bc_idx], block)
@@ -58,7 +54,8 @@ class Blockchain:
                 # self.balance.append(new_balance)
                 self.balance[bc_idx] = new_balance 
 
-            
+            if resolve:
+                self.resolve_fork()
         else:
             raise ValueError("Could Not Add Block")
 
@@ -151,18 +148,15 @@ class Blockchain:
 
         return temp_dict
 
-    def resolve_fork(self, delete_chain=False):
+    def resolve_fork(self):
         if len(self.blockchains[0]) == 0:
             return b'genesis block'
         chain_length = [len(chain) for chain in self.blockchains]
-        indices = [idx for idx, val in enumerate(chain_length) if val == max(chain_length)]
-        max_index = random.choice(indices)
+        max_index = chain_length.index(max(chain_length))
+
+        # max_chain = self.blockchains[max_index]
 
         self.true_blockchain = max_index
-
-        if delete_chain:
-            self.blockchains = [self.blockchains[self.true_blockchain].copy()]
-            self.balance = self.balance[self.true_blockchain.copy()]
 
         prev_header = []
         for chain in self.blockchains:
@@ -192,6 +186,8 @@ class Blockchain:
             if transaction in block.transactions:
                 mt = MerkleTree(block.transactions)
                 return (mt.get_proof(transaction), mt.get_root())
+
+
 
     def __str__(self):
         out = ""
