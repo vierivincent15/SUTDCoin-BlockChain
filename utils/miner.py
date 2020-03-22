@@ -63,6 +63,7 @@ class Miner:
                 try:
                     self.blockchain.add_block(block,print_idx=True)
                     print(f"Time taken: {time.time()-t1}")
+                    print()
                     return block
                 except ValueError:
                     raise
@@ -110,6 +111,8 @@ class Miner:
 
             try:
                 self.blockchain.add_block(block,print_idx=True)
+                print(f"Time taken: {time.time()-t1}")
+                print()
                 return block
             except ValueError:
                 raise
@@ -122,9 +125,9 @@ class Miner:
                 # print(pow_val)
                 if pow_val < TARGET:
                     try:
-                        print(bc_idx, b_idx)
                         self.blockchain.add_block(block,print_idx=True)
-                        print(time.time()-t1)
+                        print(f"Time taken: {time.time()-t1}")
+                        print()
                         return block
                     except ValueError:
                         raise
