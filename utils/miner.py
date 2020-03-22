@@ -65,7 +65,9 @@ class Miner:
             if pow_val < TARGET:
                 try:
                     self.blockchain.add_block(block,print_idx=True)
-                    print(f"Time taken: {time.time()-t1}")
+                    print ("Time taken:")
+                    print(time.time()-t1)
+                    print()
                     return block
                 except ValueError:
                     raise
@@ -76,7 +78,7 @@ class Miner:
                         printhelper = False
                     continue
 
-            prev_header = self.blockchain.true_prev_header
+            prev_header = self.blockchain.prev_header[self.blockchain.true_blockchain]
             transactions = self.blockchain.tx_pool.copy()
             transactions.insert(0, reward)
             block = Block.new(transactions, prev_header)
@@ -113,6 +115,9 @@ class Miner:
 
             try:
                 self.blockchain.add_block(block,print_idx=True)
+                print ("Time taken:")
+                print(time.time()-t1)
+                print()
                 return block
             except ValueError:
                 raise
@@ -126,7 +131,9 @@ class Miner:
                 if pow_val < TARGET:
                     try:
                         self.blockchain.add_block(block,print_idx=True)
+                        print ("Time taken:")
                         print(time.time()-t1)
+                        print()
                         return block
                     except ValueError:
                         raise
@@ -137,8 +144,8 @@ class Miner:
                             print("Waiting for more transactions...")
                             printhelper = False
                         continue
-
-                prev_header = self.blockchain.get_prev_header(bc_idx, b_idx)
+                
+                prev_header = self.blockchain.prev_header[bc_idx]
 
                 transactions = self.blockchain.tx_pool.copy()
                 transactions.insert(0, reward)

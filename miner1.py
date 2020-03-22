@@ -64,7 +64,6 @@ def start_mine():
         block = miner.mine(wait)
 
         if (block):
-            print("Found block")
             json_data = block.serialize()
             broadcast(miners, json_data, '/recv_block')
             if(wait):
