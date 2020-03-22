@@ -45,6 +45,10 @@ class Miner:
         serialization['root'] = proof_with_root[1].hex()
         return json.dumps(serialization)
 
+    def get_balance(self, chain):
+        balance = self.blockchain.balance[chain]
+        return json.dumps(balance)
+
     def mine(self, need_transaction=True):
         global TARGET
         pow_val = TARGET
@@ -58,7 +62,7 @@ class Miner:
             if pow_val < TARGET:
                 try:
                     self.blockchain.add_block(block)
-                    print(time.time()-t1)
+                    print(f"Time taken: {time.time()-t1}")
                     return block
                 except ValueError:
                     raise
@@ -69,7 +73,7 @@ class Miner:
                         printhelper = False
                     continue
 
-            prev_header = self.blockchain.prev_header
+            prev_header = self.blockchain.true_prev_header
             transactions = self.blockchain.tx_pool.copy()
             transactions.insert(0, reward)
             block = Block.new(transactions, prev_header)
@@ -88,14 +92,14 @@ class Miner:
         if not continuous:
             if prev_header is None:
                 prev_header = self.blockchain.get_prev_header(bc_idx, b_idx)
-            
+
             if need_transaction:
                 while len(self.blockchain.tx_pool) < 1 and len(self.blockchain.blockchains[0]) > 0:
                     if printhelper:
                         print("Waiting for more transactions...")
                         printhelper = False
                     continue
-            
+
             transactions = self.blockchain.tx_pool.copy()
 
             transactions.insert(0, reward)
@@ -131,9 +135,8 @@ class Miner:
                             printhelper = False
                         continue
 
-                
                 prev_header = self.blockchain.get_prev_header(bc_idx, b_idx)
-                    
+
                 transactions = self.blockchain.tx_pool.copy()
                 transactions.insert(0, reward)
                 block = Block.new(transactions, prev_header)
