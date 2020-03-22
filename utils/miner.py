@@ -24,9 +24,12 @@ class Miner:
         self.reward = 100
         self.sign_key = sign_key
 
-    def send_transaction(self, receiver, amount, comment="COOL!"):
-        Tx = Transaction.new(self.public_key, receiver,
+    def send_transaction(self, receiver=None, amount=None, comment="COOL!", tx_exist=False):
+        if not tx_exist:
+            Tx = Transaction.new(self.public_key, receiver,
                              amount, comment, self.sign_key)
+        else:
+            Tx = tx_exist
         self.blockchain.add_transaction(Tx)
         return Tx
 

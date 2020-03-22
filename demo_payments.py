@@ -63,6 +63,21 @@ def send_transaction(sender, ip, receiver, ip2, amount, i):
             f"Transaction {i} from {sender} to {receiver} was unsuccessful :(((")
 
 
+def resend_duplicate_transaction():
+    print("Attempting to get duplicate transaction...")
+    response = requests.get(miners['miner1']+'/get_random_tx')
+    tx = response.content
+    print("Attempting to resend the duplicate transaction...")
+    response = requests.post(
+        miners['miner1']+'/resend_duplicate',
+        data={
+            'tx': tx,
+        }
+    )
+    if response.status_code == 500:
+        print("Adding duplicate transaction failed")
+
+
 if __name__ == "__main__":
     for miner in miners.keys():
         job = Process(target=start_mine, args=(miner, ))
@@ -87,3 +102,6 @@ if __name__ == "__main__":
 
     time.sleep(10)
     get_blockchain_balance()
+
+    time.sleep(10)
+    resend_duplicate_transaction()

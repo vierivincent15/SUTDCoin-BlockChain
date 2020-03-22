@@ -166,6 +166,28 @@ def get_balance():
     return response
 
 
+@app.route('/get_random_tx', methods=['GET'])
+def get_random_tx():
+    global miner
+
+    random_tx = miner.blockchain.blockchains[-1][-1].transactions[-1].serialize(True)
+    response = Response(response=random_tx, status=200)
+
+    return response
+
+
+@app.route('/resend_duplicate', methods=['POST'])
+def resend_duplicate():
+    global miner
+
+    serialized_tx = request.form["tx"]
+    res = broadcast(miners, serialized_tx, '/recv_tx')
+    if res.status_code == 500:
+        print("Can't add duplicate transaction as it exist in the blockchain")
+        return Response(status=500)
+
+    return Response(status=200)
+
 if __name__ == "__main__":
     ip = ""
     if (ip == ""):

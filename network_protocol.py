@@ -8,6 +8,7 @@ def broadcast(miners, json_block, endpoint):
             miner+endpoint,
             data={'block': json_block}
         )
+    return response
 
 
 def broadcast_client(clients, header, endpoint):
