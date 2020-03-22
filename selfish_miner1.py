@@ -16,16 +16,13 @@ log = logging.getLogger('werkzeug')
 log.disabled = True
 
 miners = ['http://127.0.0.1:5011', 'http://127.0.0.1:5012']
-malicious = {
-    'malicious2': 'http://127.0.0.1:5021',
-    'malicious3': 'http://127.0.0.1:5022'
-}
 
-blockchain = Blockchain()
+public_chain = Blockchain()
+private_chain = Blockchain()
 sign_key = SigningKey.generate()
 public_key = sign_key.get_verifying_key()
-miner = Miner(blockchain, public_key, sign_key)
-pending_tx = {}
+miner = Miner(private_chain, public_key, sign_key)
+private_branch_len = 0
 job = None
 
 
@@ -47,31 +44,60 @@ def get_pub_key():
 
 @app.route('/init', methods=['POST'])
 def start_mine():
-    global miners, miner, pending_tx, malicious
+    global miners, miner
 
     while True:
         print("Mining")
-        block = miner.mine_malicious(bc_idx=1, need_transaction=False)
+        block = miner.mine(selfish=True)
         if (block):
             json_data = block.serialize()
             broadcast(miners, json_data, '/recv_block')
-            broadcast_malicious(malicious, json_data, '/recv_block')
-            for tid in pending_tx.keys():
-                pending_tx[tid] = pending_tx[tid] - 1
 
     return Response(status=200)
 
 
 @app.route('/recv_block', methods=['POST'])
 def receive_block():
-    global miner, blockchain, pending_tx
+    global miner, public_chain, private_chain, private_branch_len
 
     json_block = request.form['block']
     block = Block.deserialize(json_block)
 
-    blockchain.add_block(block)
-    for tid in pending_tx.keys():
-        pending_tx[tid] = pending_tx[tid] - 1
+    delta_prev = len(
+        private_chain.blockchains[0]) - len(public_chain.blockchains[1])
+    public_chain.add_block(block)
+
+    if (delta_prev == 0):
+        private_chain = public_chain
+        private_branch_len = 0
+    elif (delta_prev == 1):
+        # public last block
+        pass
+    elif (delta_prev == 2):
+        # publish all chain
+        private_branch_len = 0
+    else:
+        # publish first unpublished block
+        pass
+
+    return Response(status=200)
+
+
+@app.route('/recv_block_selfish', methods=['POST'])
+def receive_block():
+    global miner, public_chain, private_chain, private_branch_len
+
+    json_block = request.form['block']
+    block = Block.deserialize(json_block)
+
+    delta_prev = len(
+        private_chain.blockchains[0]) - len(public_chain.blockchains[1])
+    private_chain.add_block(block)
+    private_branch_len += 1
+
+    if (delta_prev == 0 and private_branch_len == 2):
+        # publish all
+        private_branch_len = 0
 
     return Response(status=200)
 
@@ -80,4 +106,4 @@ if __name__ == "__main__":
     ip = ""
     if (ip == ""):
         ip = "localhost"
-    app.run(host=ip, port=5023, debug=True)
+    app.run(host=ip, port=5021, debug=True)

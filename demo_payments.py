@@ -85,7 +85,7 @@ if __name__ == "__main__":
 
     for i in range(1, 4):
         for miner, ip in miners.items():
-            time.sleep(5)
+            time.sleep(8)
             get_blockchain_balance()
             receiver = 'client1'
             ip2 = clients[receiver]
@@ -94,7 +94,7 @@ if __name__ == "__main__":
             job.start()
 
     for i in range(1, 4):
-        time.sleep(5)
+        time.sleep(8)
         get_blockchain_balance()
         job = Process(target=send_transaction,
                       args=('client1', clients['client1'], 'client2', clients['client2'], 20, i, ))
