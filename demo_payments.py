@@ -64,7 +64,7 @@ def send_transaction(sender, ip, receiver, ip2, amount, i):
 
 
 def resend_duplicate_transaction():
-    print("Attempting to get duplicate transaction...")
+    print("\nAttempting to get duplicate transaction...")
     response = requests.get(miners['miner1']+'/get_random_tx')
     tx = response.content
     print("Attempting to resend the duplicate transaction...")

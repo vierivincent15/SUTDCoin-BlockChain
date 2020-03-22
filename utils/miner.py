@@ -27,7 +27,7 @@ class Miner:
     def send_transaction(self, receiver=None, amount=None, comment="COOL!", tx_exist=False):
         if not tx_exist:
             Tx = Transaction.new(self.public_key, receiver,
-                             amount, comment, self.sign_key)
+                                 amount, comment, self.sign_key)
         else:
             Tx = tx_exist
         self.blockchain.add_transaction(Tx)
@@ -64,8 +64,8 @@ class Miner:
             # print(pow_val)
             if pow_val < TARGET:
                 try:
-                    self.blockchain.add_block(block,print_idx=True)
-                    print ("Time taken:")
+                    self.blockchain.add_block(block, print_idx=True)
+                    print("Time taken:")
                     print(time.time()-t1)
                     print()
                     return block
@@ -114,8 +114,8 @@ class Miner:
                 pow_val = block.hash_header()
 
             try:
-                self.blockchain.add_block(block,print_idx=True)
-                print ("Time taken:")
+                self.blockchain.add_block(block, print_idx=True)
+                print("Time taken:")
                 print(time.time()-t1)
                 print()
                 return block
@@ -130,8 +130,8 @@ class Miner:
                 # print(pow_val)
                 if pow_val < TARGET:
                     try:
-                        self.blockchain.add_block(block,print_idx=True)
-                        print ("Time taken:")
+                        self.blockchain.add_block(block, print_idx=True)
+                        print("Time taken:")
                         print(time.time()-t1)
                         print()
                         return block
@@ -144,7 +144,7 @@ class Miner:
                             print("Waiting for more transactions...")
                             printhelper = False
                         continue
-                
+
                 prev_header = self.blockchain.prev_header[bc_idx]
 
                 transactions = self.blockchain.tx_pool.copy()
