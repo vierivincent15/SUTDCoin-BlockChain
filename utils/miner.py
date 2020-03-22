@@ -52,7 +52,7 @@ class Miner:
         balance = self.blockchain.balance[chain]
         return json.dumps(balance)
 
-    def mine(self, need_transaction=True):
+    def mine(self, need_transaction=True, selfish=False):
         global TARGET
         pow_val = TARGET
         reward = Transaction.new(
@@ -64,7 +64,8 @@ class Miner:
             # print(pow_val)
             if pow_val < TARGET:
                 try:
-                    self.blockchain.add_block(block, print_idx=True)
+                    if not selfish:
+                        self.blockchain.add_block(block, print_idx=True)
                     print("Time taken:")
                     print(time.time()-t1)
                     print()

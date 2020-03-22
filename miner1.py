@@ -25,6 +25,7 @@ malicious = {
     'malicious2': 'http://127.0.0.1:5022',
     'malicious3': 'http://127.0.0.1:5023'
 }
+selfish_pool = {'selfish1': 'http://127.0.0.1:5021'}
 
 blockchain = Blockchain()
 sign_key = SigningKey.generate()
@@ -52,9 +53,13 @@ def get_pub_key():
 
 @app.route('/init', methods=['POST'])
 def start_mine():
-    global miners, miner, pending_tx, clients, malicious
+    global miners, miner, pending_tx, clients, malicious, selfish_pool
 
     wait = request.form['wait']
+    selfish = False
+    if (wait == 'selfish'):
+        selfish = True
+        wait = 'no'
     if (wait == 'no'):
         wait = False
     else:
@@ -70,7 +75,10 @@ def start_mine():
                 broadcast_client(
                     clients, block.serialize(True), '/recv_header')
             else:
-                broadcast_malicious(malicious, json_data, '/recv_block')
+                if(selfish):
+                    broadcast_malicious(selfish_pool, json_data, '/recv_block')
+                else:
+                    broadcast_malicious(malicious, json_data, '/recv_block')
                 if(len(miner.blockchain.blockchains[0]) == 3):
                     job = Process(target=start_malicious,
                                   args=(malicious['malicious1'], ))
@@ -169,7 +177,8 @@ def get_balance():
 def get_random_tx():
     global miner
 
-    random_tx = miner.blockchain.blockchains[-1][-1].transactions[-1].serialize(True)
+    random_tx = miner.blockchain.blockchains[-1][-1].transactions[-1].serialize(
+        True)
     response = Response(response=random_tx, status=200)
 
     return response
@@ -186,6 +195,7 @@ def resend_duplicate():
         return Response(status=500)
 
     return Response(status=200)
+
 
 if __name__ == "__main__":
     ip = ""

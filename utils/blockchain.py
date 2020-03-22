@@ -10,6 +10,7 @@ except:
     from utils.config import TARGET
 from json import dumps, loads
 import hashlib
+import random
 
 
 class Blockchain:
@@ -21,7 +22,6 @@ class Blockchain:
         self.tids = set()
         self.balance = {self.true_blockchain: {}}
         self.prev_header = [b'genesis block']
-        self.private_chain = []
 
     def add_block(self, block, resolve=True, print_idx=False):
         idxs = self.trace_prev_header(block.header["prev_header"])
@@ -152,9 +152,8 @@ class Blockchain:
         if len(self.blockchains[0]) == 0:
             return b'genesis block'
         chain_length = [len(chain) for chain in self.blockchains]
-        max_index = chain_length.index(max(chain_length))
-
-        # max_chain = self.blockchains[max_index]
+        indices = [idx for idx, val in enumerate(chain_length) if val == max(chain_length)]
+        max_index = random.choice(indices)
 
         self.true_blockchain = max_index
 

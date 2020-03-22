@@ -23,6 +23,7 @@ sign_key = SigningKey.generate()
 public_key = sign_key.get_verifying_key()
 miner = Miner(private_chain, public_key, sign_key)
 private_branch_len = 0
+last_unpublished_block = 0
 job = None
 
 
@@ -48,23 +49,23 @@ def start_mine():
 
     while True:
         print("Mining")
-        block = miner.mine(selfish=True)
+        block = miner.mine(need_transaction=False, selfish=True)
         if (block):
-            json_data = block.serialize()
-            broadcast(miners, json_data, '/recv_block')
+            recv_block_selfish(block, others=False)
 
     return Response(status=200)
 
 
 @app.route('/recv_block', methods=['POST'])
 def receive_block():
-    global miner, public_chain, private_chain, private_branch_len
+    global miners, miner, public_chain, private_chain, private_branch_len, last_unpublished_block
 
     json_block = request.form['block']
+    print("Received block from normal miner.")
     block = Block.deserialize(json_block)
 
     delta_prev = len(
-        private_chain.blockchains[0]) - len(public_chain.blockchains[1])
+        private_chain.blockchains[0]) - len(public_chain.blockchains[0])
     public_chain.add_block(block)
 
     if (delta_prev == 0):
@@ -72,31 +73,48 @@ def receive_block():
         private_branch_len = 0
     elif (delta_prev == 1):
         # public last block
-        pass
+        json_data = private_chain.blockchains[0][-1].serialize()
+        broadcast(miners, json_data, '/recv_block')
+        last_unpublished_block += 1
     elif (delta_prev == 2):
         # publish all chain
+        for i in range(-2, 0):
+            json_data = private_chain.blockchains[0][i].serialize()
+            broadcast(miners, json_data, '/recv_block')
+            last_unpublished_block += 1
         private_branch_len = 0
     else:
         # publish first unpublished block
-        pass
+        json_data = private_chain.blockchains[0][last_unpublished_block].serialize(
+        )
+        broadcast(miners, json_data, '/recv_block')
+        last_unpublished_block += 1
 
     return Response(status=200)
 
 
 @app.route('/recv_block_selfish', methods=['POST'])
-def receive_block():
-    global miner, public_chain, private_chain, private_branch_len
-
+def wrapper():
     json_block = request.form['block']
     block = Block.deserialize(json_block)
 
+    return recv_block_selfish(block)
+
+
+def recv_block_selfish(block, others=True):
+    global miners, miner, public_chain, private_chain, private_branch_len, last_unpublished_block
+
     delta_prev = len(
-        private_chain.blockchains[0]) - len(public_chain.blockchains[1])
-    private_chain.add_block(block)
+        private_chain.blockchains[0]) - len(public_chain.blockchains[0])
+    if (others):
+        private_chain.add_block(block)
     private_branch_len += 1
 
     if (delta_prev == 0 and private_branch_len == 2):
-        # publish all
+        for i in range(-2, 0):
+            json_data = private_chain.blockchains[0][i].serialize()
+            broadcast(miners, json_data, '/recv_block')
+            last_unpublished_block += 1
         private_branch_len = 0
 
     return Response(status=200)

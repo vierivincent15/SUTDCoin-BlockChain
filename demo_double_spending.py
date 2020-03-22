@@ -29,23 +29,6 @@ def start_mine(miner):
     )
 
 
-def send_transaction(sender, receiver, amount):
-    response = requests.post(
-        sender+'/send',
-        data={
-            'receiver': receiver,
-            'amount': amount
-        }
-    )
-
-    if (response.status_code == 200):
-        print(f"Transaction to {receiver} was successful")
-    elif (response.status_code == 500):
-        print("Not enough coins")
-    else:
-        print(f"Transaction to {receiver} was unsuccessful :(((")
-
-
 if __name__ == "__main__":
     for miner in miners.keys():
         job = Process(target=start_mine, args=(miner, ))
