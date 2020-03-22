@@ -21,7 +21,7 @@ class Blockchain:
         self.true_blockchain = 0
         self.tx_pool = []
         self.tids = set()
-        self.balance = [{}]
+        self.balance = {self.true_blockchain: {}}
         self.true_prev_header = b'genesis block'
 
     def add_block(self, block, resolve=True):
