@@ -2,3 +2,4 @@ __pycache__/
 Procfile
 env/
 .idea/
+.vscode/
