@@ -10,6 +10,7 @@ except:
     from utils.config import TARGET
 from json import dumps, loads
 import hashlib
+import random
 
 
 class Blockchain:
@@ -151,9 +152,8 @@ class Blockchain:
         if len(self.blockchains[0]) == 0:
             return b'genesis block'
         chain_length = [len(chain) for chain in self.blockchains]
-        max_index = chain_length.index(max(chain_length))
-
-        max_chain = self.blockchains[max_index]
+        indices = [idx for idx, val in enumerate(chain_length) if val == max(chain_length)]
+        max_index = random.choice(indices)
 
         self.true_blockchain = max_index
 
