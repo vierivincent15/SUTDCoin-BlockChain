@@ -50,19 +50,3 @@ if __name__ == "__main__":
     for miner in miners.keys():
         job = Process(target=start_mine, args=(miner, ))
         job.start()
-
-    # time.sleep(10)
-    # for i in range(1, 4):
-    #     print(f"Sending transaction {i} from miner to client1")
-    #     for miner in miners.values():
-    #         job = Process(target=send_transaction,
-    #                       args=(miner, 'client1', 10, ))
-    #         job.start()
-    #     time.sleep(15)
-
-    # for i in range(1, 4):
-    #     print(f"Sending transaction {i} from client1 to client2")
-    #     job = Process(target=send_transaction,
-    #                   args=(clients['client1'], 'client2', 30, ))
-    #     job.start()
-    #     time.sleep(15)

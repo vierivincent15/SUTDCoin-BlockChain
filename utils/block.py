@@ -77,28 +77,4 @@ class Block:
 
 # to test implementation
 if __name__ == "__main__":
-
-    sign_key = SigningKey.generate()
-    public_key = sign_key.get_verifying_key()
-
-    transactions = [Transaction.new(None, public_key, 100, "Reward", None)]
-
-    Block.new(transactions, b'aaa')
-
-    # transactions = []
-    # amount = 1000
-    # comment = "COOL!"
-    # for i in range(4):
-    #     sign_key_1 = SigningKey.generate()
-    #     sender = sign_key_1.get_verifying_key()
-
-    #     sign_key_2 = SigningKey.generate()
-    #     receiver = sign_key_2.get_verifying_key()
-
-    #     Tx = Transaction.new(sender, receiver, amount, comment, sign_key_1)
-    #     transactions.append(Tx)
-
-    # TARGET = b'\x00\x00\xff\xff' + b'\xff'*28
-
-    # block1 = Block.new(transactions, b'genesis block')
-    # print(block1.header)
+    pass
