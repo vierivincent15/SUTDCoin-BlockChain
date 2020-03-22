@@ -52,7 +52,7 @@ def start_mine():
 
     # start the second chain
     print("Mining second chain")
-    block = miner.mine_malicious(bc_idx=0, b_idx=1, need_transaction=False)
+    block = miner.mine_malicious(bc_idx=0, b_idx=1, need_transaction=False, continuous=False)
     json_data = block.serialize()
     broadcast(miners, json_data, '/recv_block')
     broadcast_malicious(malicious, json_data, '/recv_block')
