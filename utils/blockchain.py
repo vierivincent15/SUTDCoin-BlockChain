@@ -21,7 +21,6 @@ class Blockchain:
         self.tids = set()
         self.balance = {self.true_blockchain: {}}
         self.prev_header = [b'genesis block']
-        self.private_chain = []
 
     def add_block(self, block, resolve=True, print_idx=False):
         idxs = self.trace_prev_header(block.header["prev_header"])
