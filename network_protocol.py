@@ -1,8 +1,10 @@
+from flask import Response
 from ecdsa import VerifyingKey, NIST192p
 import requests
 
 
 def broadcast(miners, json_block, endpoint):
+    response = Response(status=200)
     for miner in miners:
         response = requests.post(
             miner+endpoint,

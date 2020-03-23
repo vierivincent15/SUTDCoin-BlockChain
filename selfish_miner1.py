@@ -16,6 +16,7 @@ log = logging.getLogger('werkzeug')
 log.disabled = True
 
 miners = ['http://127.0.0.1:5011', 'http://127.0.0.1:5012']
+selfish_pool = []
 
 public_blockchain = Blockchain()
 sign_key = SigningKey.generate()
@@ -44,12 +45,14 @@ def get_pub_key():
 
 @app.route('/init', methods=['POST'])
 def start_mine():
-    global miners, miner
+    global miners, miner, selfish_pool
 
     while True:
         print("Mining")
         block = miner.mine_selfish(need_transaction=False)
         if (block):
+            json_data = block.serialize()
+            broadcast(selfish_pool, json_data, '/recv_block_selfish')
             recv_block_selfish(block, others=False)
 
     return Response(status=200)
