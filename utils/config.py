@@ -1,1 +1,1 @@
-TARGET = b'\x00'*2 + b'\xff'*27
+TARGET = b'\x00'*2 + b'\xff'*30
