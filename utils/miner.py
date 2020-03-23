@@ -52,7 +52,9 @@ class Miner:
         serialization['root'] = proof_with_root[1].hex()
         return json.dumps(serialization)
 
-    def get_balance(self, chain):
+    def get_balance(self, chain=None):
+        if chain is None:
+            chain = self.blockchain.true_blockchain
         balance = self.blockchain.balance[chain]
         return json.dumps(balance)
 
@@ -129,7 +131,8 @@ class Miner:
 
     def reset_private_chain(self):
         self.private_chain = self.blockchain.blockchains[self.blockchain.true_blockchain].copy()
-        self.headers = [block.hash_header() for block in self.private_chain]
+        temp_headers = [block.hash_header() for block in self.private_chain]
+        self.headers = temp_headers.copy()
 
     def mine_malicious(self, prev_header=None, bc_idx=-1, b_idx=-1, continuous=True, need_transaction=True):
         global TARGET

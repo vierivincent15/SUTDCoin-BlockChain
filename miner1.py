@@ -80,7 +80,6 @@ def start_mine():
                 else:
                     broadcast_malicious(malicious, json_data, '/recv_block')
                 if(len(miner.blockchain.blockchains[0]) == 3):
-                    print(111111111)
                     job = Process(target=start_malicious,
                                   args=(malicious['malicious1'], ))
                     job.start()
@@ -170,7 +169,7 @@ def get_proof():
 def get_balance():
     global miner
 
-    balance = miner.get_balance(0)
+    balance = miner.get_balance()
     response = Response(response=balance, status=200)
 
     return response

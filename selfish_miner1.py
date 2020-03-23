@@ -167,6 +167,21 @@ def recv_block_selfish(block, others=False):
 
     return Response(status=200)
 
+    @app.route('/get_balance', methods=['GET'])
+    def get_balance():
+        global miner
+
+        balance = miner.get_balance()
+        response = Response(response=balance, status=200)
+
+        return response
+
+    @app.route('/get_id', methods=['GET'])
+    def get_miner_id():
+        global miner
+        response = Response(response=miner.id, status=200)
+
+        return response
 
 if __name__ == "__main__":
     ip = ""

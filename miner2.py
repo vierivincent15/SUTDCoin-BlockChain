@@ -154,7 +154,7 @@ def receive_transaction():
 def get_balance():
     global miner
 
-    balance = miner.get_balance(0)
+    balance = miner.get_balance()
     response = Response(response=balance, status=200)
 
     return response
