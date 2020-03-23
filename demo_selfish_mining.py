@@ -41,3 +41,12 @@ if __name__ == "__main__":
         job = Process(target=start_mine, args=(miner, ))
         job.start()
 
+    while True:
+        time.sleep(10)
+
+        get_blockchain_balance()
+
+        print("Selfish Miner")
+        for selfish_miner in selfish_pool.values():
+            response = requests.get(selfish_miner+'/pub')
+            print(response.content.hex())
