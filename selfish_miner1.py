@@ -73,7 +73,7 @@ def receive_block():
     #     public_chain = temp_public_chain.copy()
     #     print(len(public_chain))
 
-    print("delta_prev00: " + str(delta_prev))
+    print("delta_prev: " + str(delta_prev))
     print("private_branch_len: " + str(private_branch_len))
     print()
     if (delta_prev == 0):
