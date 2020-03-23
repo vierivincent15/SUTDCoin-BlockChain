@@ -8,7 +8,6 @@ from ecdsa import SigningKey, VerifyingKey, BadSignatureError
 from multiprocessing import Process
 import requests
 import time
-
 import logging
 
 app = Flask(__name__)
@@ -23,7 +22,7 @@ sign_key = SigningKey.generate()
 public_key = sign_key.get_verifying_key()
 miner = Miner(public_blockchain, public_key, sign_key)
 private_branch_len = 0
-last_unpublished_block = 0
+unpublished_block = []
 job = None
 
 
@@ -60,7 +59,7 @@ def start_mine():
 
 @app.route('/recv_block', methods=['POST'])
 def receive_block():
-    global miners, miner, public_blockchain, private_branch_len, last_unpublished_block
+    global miners, miner, public_blockchain, private_branch_len, unpublished_block
 
     json_block = request.form['block']
     print("Received block from normal miner.")
@@ -84,6 +83,7 @@ def receive_block():
         print("Resetting private chain")
         miner.reset_private_chain()
         private_branch_len = 0
+        unpublished_block = []
         # temp_private_chain = Blockchain()
         # for block in public_chain:
         #     temp_private_chain.add_block(block)
@@ -99,7 +99,6 @@ def receive_block():
         broadcast(miners, json_data, '/recv_block')
         print()
         public_blockchain.add_block(block)
-        last_unpublished_block += 1
 
     elif (delta_prev == 2):
         # publish all chain
@@ -111,21 +110,20 @@ def receive_block():
             broadcast(miners, json_data, '/recv_block')
             print()
             public_blockchain.add_block(block)
-            last_unpublished_block += 1
             time.sleep(1)
         private_branch_len = 0
+        unpublished_block = []
 
     else:
         # publish first unpublished block
         # json_data = private_chain.blockchains[0][last_unpublished_block].serialize()
 
-        block = miner.private_chain[last_unpublished_block]
+        block = unpublished_block.pop(index=0)
         json_data = block.serialize()
         print("Broadcasting...")
         broadcast(miners, json_data, '/recv_block')
         print()
         public_blockchain.add_block(block)
-        last_unpublished_block += 1
 
     return Response(status=200)
 
@@ -139,7 +137,7 @@ def wrapper():
 
 
 def recv_block_selfish(block, others=False):
-    global miners, miner, public_blockchain, private_branch_len, last_unpublished_block
+    global miners, miner, public_blockchain, private_branch_len, unpublished_block
 
     # if others:
     # private_chain.add_block(block, print_idx=True)
@@ -152,6 +150,7 @@ def recv_block_selfish(block, others=False):
 
     # public_blockchain.add_block(block)
     private_branch_len += 1
+    unpublished_block.append(block)
 
     print("delta_prev00: " + str(delta_prev))
     print("private_branch_len: " + str(private_branch_len))
@@ -166,8 +165,8 @@ def recv_block_selfish(block, others=False):
             broadcast(miners, json_data, '/recv_block')
             print()
             public_blockchain.add_block(block)
-            last_unpublished_block += 1
         private_branch_len = 0
+        unpublished_block = []
 
     return Response(status=200)
 
