@@ -16,11 +16,13 @@ miners = {
 
 selfish_pool = {'selfish1': 'http://127.0.0.1:5021'}
 
+
 def start_mine(miner):
     response = requests.post(
         miners[miner]+'/init',
         data={'wait': 'selfish'}
     )
+
 
 def get_blockchain_balance():
     global miners
@@ -31,6 +33,7 @@ def get_blockchain_balance():
     for uuid, balance in serialization.items():
         print(f"{uuid}: {balance}")
     print()
+
 
 if __name__ == "__main__":
     for miner in miners.keys():

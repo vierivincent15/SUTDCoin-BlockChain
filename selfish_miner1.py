@@ -62,10 +62,10 @@ def receive_block():
     json_block = request.form['block']
     print("Received block from normal miner.")
     block = Block.deserialize(json_block)
-    
+
     delta_prev = len(
         miner.private_chain) - len(public_blockchain.blockchains[public_blockchain.true_blockchain])
-    
+
     public_blockchain.add_block(block)
     # temp_public_chain = public_blockchain.blockchains[public_blockchain.true_blockchain]
 
@@ -115,12 +115,12 @@ def receive_block():
     else:
         # publish first unpublished block
         # json_data = private_chain.blockchains[0][last_unpublished_block].serialize()
-        
+
         block = miner.private_chain[last_unpublished_block]
         json_data = block.serialize()
         print("Broadcasting...")
         broadcast(miners, json_data, '/recv_block')
-        print()        
+        print()
         public_blockchain.add_block(block)
         last_unpublished_block += 1
 
@@ -139,10 +139,11 @@ def recv_block_selfish(block, others=False):
     global miners, miner, public_blockchain, private_branch_len, last_unpublished_block
 
     # if others:
-        # private_chain.add_block(block, print_idx=True)
+    # private_chain.add_block(block, print_idx=True)
     # miner.private_chain.append(block)
 
-    delta_prev = len(miner.private_chain) - len(public_blockchain.blockchains[public_blockchain.true_blockchain])
+    delta_prev = len(miner.private_chain) - \
+        len(public_blockchain.blockchains[public_blockchain.true_blockchain])
 
     miner.add_block_to_private(block)
 
@@ -167,21 +168,24 @@ def recv_block_selfish(block, others=False):
 
     return Response(status=200)
 
-    @app.route('/get_balance', methods=['GET'])
-    def get_balance():
-        global miner
 
-        balance = miner.get_balance()
-        response = Response(response=balance, status=200)
+@app.route('/get_balance', methods=['GET'])
+def get_balance():
+    global miner
 
-        return response
+    balance = miner.get_balance()
+    response = Response(response=balance, status=200)
 
-    @app.route('/get_id', methods=['GET'])
-    def get_miner_id():
-        global miner
-        response = Response(response=miner.id, status=200)
+    return response
 
-        return response
+
+@app.route('/get_id', methods=['GET'])
+def get_miner_id():
+    global miner
+    response = Response(response=miner.id, status=200)
+
+    return response
+
 
 if __name__ == "__main__":
     ip = ""

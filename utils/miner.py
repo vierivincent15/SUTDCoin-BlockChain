@@ -24,7 +24,7 @@ class Miner:
         self.reward = 100
         self.sign_key = sign_key
 
-        #for selfish miners
+        # for selfish miners
         self.private_chain = []
         self.headers = []
 
@@ -91,7 +91,7 @@ class Miner:
             transactions.insert(0, reward)
             block = Block.new(transactions, prev_header)
             pow_val = block.hash_header()
-        
+
     def mine_selfish(self, need_transaction=True):
         global TARGET
         pow_val = TARGET
@@ -130,7 +130,8 @@ class Miner:
         self.headers.append(block.hash_header())
 
     def reset_private_chain(self):
-        self.private_chain = self.blockchain.blockchains[self.blockchain.true_blockchain].copy()
+        self.private_chain = self.blockchain.blockchains[self.blockchain.true_blockchain].copy(
+        )
         temp_headers = [block.hash_header() for block in self.private_chain]
         self.headers = temp_headers.copy()
 
