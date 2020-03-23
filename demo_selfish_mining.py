@@ -2,6 +2,7 @@ from utils.block import Block
 from utils.blockchain import Blockchain
 from utils.transaction import Transaction
 from utils.miner import Miner
+from network_protocol import get_public_key
 from ecdsa import SigningKey, VerifyingKey, BadSignatureError
 from multiprocessing import Process
 import requests
@@ -42,10 +43,8 @@ if __name__ == "__main__":
 
     time.sleep(30)
 
-    for miner in miners.keys():
-        get_blockchain_balance()
+    get_blockchain_balance()
 
     for selfish_miner in selfish_pool.values():
-        get_blockchain_balance()
-        response = requests.get(selfish_miner+'/get_id')
+        response = requests.get(selfish_miner+'/pub')
         print(response.content)
