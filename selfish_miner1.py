@@ -78,6 +78,7 @@ def receive_block():
     print("delta_prev: " + str(delta_prev))
     print("private_branch_len: " + str(private_branch_len))
     print()
+    
     if (delta_prev == 0):
         # private_chain.add_block(block)
         print("Resetting private chain")
