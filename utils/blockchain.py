@@ -171,7 +171,6 @@ class Blockchain:
                     return (i, j)
 
         # meaning prev_header not found in chain
-        print(prev_header)
         return -1
 
     def get_prev_header(self, bc_idx, b_idx):

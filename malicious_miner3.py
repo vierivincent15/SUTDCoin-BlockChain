@@ -18,8 +18,8 @@ log.disabled = True
 
 miners = ['http://127.0.0.1:5011', 'http://127.0.0.1:5012']
 malicious = {
-    'malicious2': 'http://127.0.0.1:5021',
-    'malicious3': 'http://127.0.0.1:5023'
+    'malicious1': 'http://127.0.0.1:5021',
+    'malicious2': 'http://127.0.0.1:5022'
 }
 
 blockchain = Blockchain()

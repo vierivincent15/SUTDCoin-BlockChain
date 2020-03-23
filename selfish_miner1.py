@@ -63,6 +63,7 @@ def receive_block():
 
     json_block = request.form['block']
     print("Received block from normal miner.")
+    print()
     block = Block.deserialize(json_block)
 
     delta_prev = len(
@@ -82,6 +83,7 @@ def receive_block():
     if (delta_prev == 0):
         # private_chain.add_block(block)
         print("Resetting private chain")
+        print()
         miner.reset_private_chain()
         private_branch_len = 0
         unpublished_block = []
@@ -91,7 +93,7 @@ def receive_block():
         # private_chain = copy(temp_private_chain, deep=True)
 
     elif (delta_prev == 1):
-        print("COOL11!")
+        print("delta_prev = 1")
         # public last block
         # json_data = private_chain.blockchains[0][-1].serialize()
         try:
@@ -103,6 +105,7 @@ def receive_block():
             public_blockchain.add_block(block)
         except IndexError:
             print("Private chain emptied")
+            print()
 
     elif (delta_prev == 2):
         # publish all chain
@@ -118,6 +121,7 @@ def receive_block():
                 time.sleep(1)
             except IndexError:
                 print("Private chain emptied")
+                print()
         private_branch_len = 0
         unpublished_block = []
 

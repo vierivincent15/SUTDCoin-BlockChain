@@ -70,9 +70,7 @@ class Miner:
             # print(pow_val)
             if pow_val < TARGET:
                 try:
-                    print(len(self.blockchain.blockchains[0]))
                     self.blockchain.add_block(block, print_idx=True)
-                    print(len(self.blockchain.blockchains[0]))
                     print("Time taken:")
                     print(time.time()-t1)
                     print()
