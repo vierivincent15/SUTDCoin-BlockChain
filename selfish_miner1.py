@@ -18,11 +18,9 @@ log.disabled = True
 miners = ['http://127.0.0.1:5011', 'http://127.0.0.1:5012']
 
 public_blockchain = Blockchain()
-public_chain = []
-private_chain = Blockchain()
 sign_key = SigningKey.generate()
 public_key = sign_key.get_verifying_key()
-miner = Miner(private_chain, public_key, sign_key)
+miner = Miner(public_blockchain, public_key, sign_key)
 private_branch_len = 0
 last_unpublished_block = 0
 job = None
@@ -48,10 +46,9 @@ def get_pub_key():
 def start_mine():
     global miners, miner
 
-    print(1111111111111111111111111111111111111111111111111111111)
     while True:
         print("Mining")
-        block = miner.mine(need_transaction=False, selfish=True)
+        block = miner.mine_selfish(need_transaction=False)
         if (block):
             recv_block_selfish(block, others=False)
 
@@ -60,45 +57,74 @@ def start_mine():
 
 @app.route('/recv_block', methods=['POST'])
 def receive_block():
-    global miners, miner, public_blockchain, public_chain, private_chain, private_branch_len, last_unpublished_block
+    global miners, miner, public_blockchain, private_branch_len, last_unpublished_block
 
     json_block = request.form['block']
     print("Received block from normal miner.")
     block = Block.deserialize(json_block)
-
+    
     delta_prev = len(
-        private_chain.blockchains[0]) - len(public_chain)
+        miner.private_chain) - len(public_blockchain.blockchains[public_blockchain.true_blockchain])
     
     public_blockchain.add_block(block)
-    temp_public_chain = public_blockchain.blockchains[public_blockchain.true_blockchain]
+    # temp_public_chain = public_blockchain.blockchains[public_blockchain.true_blockchain]
 
-    if len(temp_public_chain) != len(public_chain):
-        public_chain = temp_public_chain.copy()
+    # if len(temp_public_chain) != len(public_chain):
+    #     public_chain = temp_public_chain.copy()
+    #     print(len(public_chain))
 
-        if (delta_prev == 0):
-            private_chain.add_block(block)
-            print(len(private_chain.blockchains[0]))
-            private_branch_len = 0
-        elif (delta_prev == 1):
-            # public last block
-            json_data = private_chain.blockchains[0][-1].serialize()
+    print("delta_prev00: " + str(delta_prev))
+    print("private_branch_len: " + str(private_branch_len))
+    print()
+    if (delta_prev == 0):
+        # private_chain.add_block(block)
+        print("Resetting private chain")
+        miner.reset_private_chain()
+        private_branch_len = 0
+        # temp_private_chain = Blockchain()
+        # for block in public_chain:
+        #     temp_private_chain.add_block(block)
+        # private_chain = copy(temp_private_chain, deep=True)
+
+    elif (delta_prev == 1):
+        print("COOL11!")
+        # public last block
+        # json_data = private_chain.blockchains[0][-1].serialize()
+        block = miner.private_chain[-1]
+        json_data = block.serialize()
+        print("Broadcasting...")
+        broadcast(miners, json_data, '/recv_block')
+        print()
+        public_blockchain.add_block(block)
+        last_unpublished_block += 1
+
+    elif (delta_prev == 2):
+        # publish all chain
+        for i in range(-2, 0):
+            # json_data = private_chain.blockchains[0][i].serialize()
+            block = miner.private_chain[i]
+            json_data = block.serialize()
+            print("Broadcasting...")
             broadcast(miners, json_data, '/recv_block')
+            print()
+            public_blockchain.add_block(block)
             last_unpublished_block += 1
-        elif (delta_prev == 2):
-            # publish all chain
-            for i in range(-2, 0):
-                json_data = private_chain.blockchains[0][i].serialize()
-                broadcast(miners, json_data, '/recv_block')
-                last_unpublished_block += 1
-            private_branch_len = 0
-        else:
-            # publish first unpublished block
-            json_data = private_chain.blockchains[0][last_unpublished_block].serialize(
-            )
-            broadcast(miners, json_data, '/recv_block')
-            last_unpublished_block += 1
+            time.sleep(1)
+        private_branch_len = 0
 
-        return Response(status=200)
+    else:
+        # publish first unpublished block
+        # json_data = private_chain.blockchains[0][last_unpublished_block].serialize()
+        
+        block = miner.private_chain[last_unpublished_block]
+        json_data = block.serialize()
+        print("Broadcasting...")
+        broadcast(miners, json_data, '/recv_block')
+        print()        
+        public_blockchain.add_block(block)
+        last_unpublished_block += 1
+
+    return Response(status=200)
 
 
 @app.route('/recv_block_selfish', methods=['POST'])
@@ -109,20 +135,33 @@ def wrapper():
     return recv_block_selfish(block)
 
 
-def recv_block_selfish(block, others=True):
-    global miners, miner, public_chain, private_chain, private_branch_len, last_unpublished_block
+def recv_block_selfish(block, others=False):
+    global miners, miner, public_blockchain, private_branch_len, last_unpublished_block
 
-    delta_prev = len(
-        private_chain.blockchains[0]) - len(public_chain)
-    private_chain.add_block(block, print_idx=True)
-    print()
+    # if others:
+        # private_chain.add_block(block, print_idx=True)
+    # miner.private_chain.append(block)
+
+    delta_prev = len(miner.private_chain) - len(public_blockchain.blockchains[public_blockchain.true_blockchain])
+
+    miner.add_block_to_private(block)
+
+    # public_blockchain.add_block(block)
     private_branch_len += 1
 
+    print("delta_prev00: " + str(delta_prev))
+    print("private_branch_len: " + str(private_branch_len))
+    print()
     if (delta_prev == 0 and private_branch_len == 2):
-        print("COOL!")
-        for i in range(-2, 0):
-            json_data = private_chain.blockchains[0][i].serialize()
+        print("Sending block!")
+        for i in range(-1, 0):
+            block = miner.private_chain[i]
+            # block = private_chain.blockchains[0][i]
+            json_data = block.serialize()
+            print("Broadcasting...")
             broadcast(miners, json_data, '/recv_block')
+            print()
+            public_blockchain.add_block(block)
             last_unpublished_block += 1
         private_branch_len = 0
 

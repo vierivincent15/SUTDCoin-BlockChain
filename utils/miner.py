@@ -24,6 +24,10 @@ class Miner:
         self.reward = 100
         self.sign_key = sign_key
 
+        #for selfish miners
+        self.private_chain = []
+        self.headers = []
+
     def send_transaction(self, receiver=None, amount=None, comment="COOL!", tx_exist=False):
         if not tx_exist:
             Tx = Transaction.new(self.public_key, receiver,
@@ -52,7 +56,7 @@ class Miner:
         balance = self.blockchain.balance[chain]
         return json.dumps(balance)
 
-    def mine(self, need_transaction=True, selfish=False):
+    def mine(self, need_transaction=True):
         global TARGET
         pow_val = TARGET
         reward = Transaction.new(
@@ -64,8 +68,9 @@ class Miner:
             # print(pow_val)
             if pow_val < TARGET:
                 try:
-                    if not selfish:
-                        self.blockchain.add_block(block, print_idx=True)
+                    print(len(self.blockchain.blockchains[0]))
+                    self.blockchain.add_block(block, print_idx=True)
+                    print(len(self.blockchain.blockchains[0]))
                     print("Time taken:")
                     print(time.time()-t1)
                     print()
@@ -84,6 +89,47 @@ class Miner:
             transactions.insert(0, reward)
             block = Block.new(transactions, prev_header)
             pow_val = block.hash_header()
+        
+    def mine_selfish(self, need_transaction=True):
+        global TARGET
+        pow_val = TARGET
+        reward = Transaction.new(
+            None, self.public_key, self.reward, "Reward", None)
+        t1 = time.time()
+        printhelper = True
+
+        while True:
+            # print(pow_val)
+            if pow_val < TARGET:
+                try:
+                    # self.blockchain.add_block(block, print_idx=True)
+                    print("Found selfish blocks")
+                    print("Time taken:")
+                    print(time.time()-t1)
+                    print()
+                    return block
+                except ValueError:
+                    raise
+            if need_transaction:
+                if len(self.blockchain.tx_pool) < 1 and len(self.blockchain.blockchains[0]) > 0:
+                    if printhelper:
+                        print("Waiting for more transactions...")
+                        printhelper = False
+                    continue
+
+            prev_header = self.headers[-1]
+            transactions = self.blockchain.tx_pool.copy()
+            transactions.insert(0, reward)
+            block = Block.new(transactions, prev_header)
+            pow_val = block.hash_header()
+
+    def add_block_to_private(self, block):
+        self.private_chain.append(block)
+        self.headers.append(block.hash_header())
+
+    def reset_private_chain(self):
+        self.private_chain = self.blockchain.blockchains[self.blockchain.true_blockchain].copy()
+        self.headers = [block.hash_header() for block in self.private_chain]
 
     def mine_malicious(self, prev_header=None, bc_idx=-1, b_idx=-1, continuous=True, need_transaction=True):
         global TARGET

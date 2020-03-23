@@ -25,7 +25,6 @@ class Blockchain:
 
     def add_block(self, block, resolve=True, print_idx=False):
         idxs = self.trace_prev_header(block.header["prev_header"])
-        
         if self.validate_block(block, idxs):
             bc_idx, b_idx = 0, -1
             if idxs != -1:
@@ -33,7 +32,7 @@ class Blockchain:
             if print_idx:
                 print("Block found on:")
                 print("Chain {}".format(bc_idx))
-                print("Block {}".format(b_idx))
+                print("Block {}".format(b_idx+1))
             # print(idxs,len(self.blockchains[bc_idx]))
             if (b_idx == len(self.blockchains[bc_idx]) - 1) or b_idx == -1:
                 self.blockchains[bc_idx].append(block)
@@ -76,6 +75,8 @@ class Blockchain:
 
         # check for prev_header existence
         if idxs == -1:
+            print("prev_header does not exist")
+            # print(block.hash_header())
             return False
 
         # check for non-negative balance
@@ -170,6 +171,7 @@ class Blockchain:
                     return (i, j)
 
         # meaning prev_header not found in chain
+        print(prev_header)
         return -1
 
     def get_prev_header(self, bc_idx, b_idx):
