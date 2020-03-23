@@ -29,11 +29,14 @@ def get_blockchain_balance():
     global miners
 
     print("\nGetting blockchain balance...")
-    response = requests.get(miners['miner1']+'/get_balance')
-    serialization = json.loads(response.content)
-    for uuid, balance in serialization.items():
-        print(f"{uuid}: {balance}")
-    print()
+    try:
+        response = requests.get(miners['miner1']+'/get_balance')
+        serialization = json.loads(response.content)
+        for uuid, balance in serialization.items():
+            print(f"{uuid}: {balance}")
+        print()
+    except:
+        print()
 
 
 if __name__ == "__main__":
