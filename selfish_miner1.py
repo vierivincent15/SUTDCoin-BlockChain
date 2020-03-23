@@ -78,7 +78,7 @@ def receive_block():
     print("delta_prev: " + str(delta_prev))
     print("private_branch_len: " + str(private_branch_len))
     print()
-    
+
     if (delta_prev == 0):
         # private_chain.add_block(block)
         print("Resetting private chain")
@@ -94,37 +94,45 @@ def receive_block():
         print("COOL11!")
         # public last block
         # json_data = private_chain.blockchains[0][-1].serialize()
-        block = miner.private_chain[-1]
-        json_data = block.serialize()
-        print("Broadcasting...")
-        broadcast(miners, json_data, '/recv_block')
-        print()
-        public_blockchain.add_block(block)
-
-    elif (delta_prev == 2):
-        # publish all chain
-        for i in range(-2, 0):
-            # json_data = private_chain.blockchains[0][i].serialize()
-            block = miner.private_chain[i]
+        try:
+            block = unpublished_block.pop()
             json_data = block.serialize()
             print("Broadcasting...")
             broadcast(miners, json_data, '/recv_block')
             print()
             public_blockchain.add_block(block)
-            time.sleep(1)
+        except IndexError:
+            print("Private chain emptied")
+
+    elif (delta_prev == 2):
+        # publish all chain
+        for i in range(len(unpublished_block)):
+            # json_data = private_chain.blockchains[0][i].serialize()
+            try:
+                block = unpublished_block.pop(0)
+                json_data = block.serialize()
+                print("Broadcasting...")
+                broadcast(miners, json_data, '/recv_block')
+                print()
+                public_blockchain.add_block(block)
+                time.sleep(1)
+            except IndexError:
+                print("Private chain emptied")
         private_branch_len = 0
         unpublished_block = []
 
     else:
         # publish first unpublished block
         # json_data = private_chain.blockchains[0][last_unpublished_block].serialize()
-
-        block = unpublished_block.pop(index=0)
-        json_data = block.serialize()
-        print("Broadcasting...")
-        broadcast(miners, json_data, '/recv_block')
-        print()
-        public_blockchain.add_block(block)
+        try:
+            block = unpublished_block.pop(0)
+            json_data = block.serialize()
+            print("Broadcasting...")
+            broadcast(miners, json_data, '/recv_block')
+            print()
+            public_blockchain.add_block(block)
+        except IndexError:
+            print("Private chain emptied")
 
     return Response(status=200)
 
@@ -158,14 +166,17 @@ def recv_block_selfish(block, others=False):
     print()
     if (delta_prev == 0 and private_branch_len == 2):
         print("Sending block!")
-        for i in range(-1, 0):
-            block = miner.private_chain[i]
-            # block = private_chain.blockchains[0][i]
-            json_data = block.serialize()
-            print("Broadcasting...")
-            broadcast(miners, json_data, '/recv_block')
-            print()
-            public_blockchain.add_block(block)
+        for i in range(len(unpublished_block)):
+            try:
+                block = unpublished_block.pop(0)
+                # block = private_chain.blockchains[0][i]
+                json_data = block.serialize()
+                print("Broadcasting...")
+                broadcast(miners, json_data, '/recv_block')
+                print()
+                public_blockchain.add_block(block)
+            except IndexError:
+                print("Private chain emptied")
         private_branch_len = 0
         unpublished_block = []
 
